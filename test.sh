@@ -1,19 +1,19 @@
 #!/bin/bash
 
 function fail() {
-  echo -n -e '\e[1;31m[ERROR]\e[0m '
+  echo -n -e '[ERROR] '
   echo "$1"
   exit 1
 }
 
 function do_run() {
-  error=$(echo "$3" | ./minilisp 2>&1 > /dev/null)
+  error=$(echo "$3" | ./gosp 2>&1 > /dev/null)
   if [ -n "$error" ]; then
     echo FAILED
     fail "$error"
   fi
 
-  result=$(echo "$3" | ./minilisp 2> /dev/null | tail -1)
+  result=$(echo "$3" | ./gosp 2> /dev/null | tail -1)
   if [ "$result" != "$2" ]; then
     echo FAILED
     fail "$2 expected, but got $result"
@@ -23,8 +23,8 @@ function do_run() {
 function run() {
   echo -n "Testing $1 ... "
   # Run the tests twice to test the garbage collector with different settings.
-  MINILISP_ALWAYS_GC= do_run "$@"
-  MINILISP_ALWAYS_GC=1 do_run "$@"
+  gosp_ALWAYS_GC= do_run "$@"
+  gosp_ALWAYS_GC=1 do_run "$@"
   echo ok
 }
 

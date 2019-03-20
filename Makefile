@@ -1,10 +1,10 @@
 .PHONY: build clean test
 
 build: 
-	go build -o minilisp minilisp.go
+	go build -o gosp gosp.go
 
 clean:
-	rm -f minilisp *~
+	rm -f gosp *~
 
-test: minilisp
+test: build
 	@./test.sh
