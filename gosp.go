@@ -7,23 +7,26 @@ import (
 	"text/scanner"
 )
 
+var scn scanner.Scanner
+
+func init() {
+	scn.Init(os.Stdin)
+}
+
 // Expr has data of expression.
 type Expr string
 
 func readExpr() (Expr, error) {
 	var expr Expr
-
-	var scn scanner.Scanner
-	scn.Init(os.Stdin)
 	c := scn.Next()
 	for c != scanner.EOF {
 		switch c {
 		case ' ', '\n', '\r', '\t':
+			return expr, nil
 		default:
 			strExpr := string(expr)
 			strExpr += string(c)
 			expr = Expr(strExpr)
-			return expr, nil
 		}
 		c = scn.Next()
 	}
