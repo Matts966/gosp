@@ -33,6 +33,18 @@ func isDigit(r rune) bool {
 	return false
 }
 
+func isSymbolRune(r rune) bool {
+	if 'a' <= r && r <= 'Z' {
+		return true
+	}
+	for _, s := range(types.Symbols) {
+		if s == r {
+			return true
+		}
+	}
+	return false
+}
+
 func readNumber(v int) int {
 	for isDigit(scn.Peek()) {
 		v = v*10 + int(scn.Next()-'0')
@@ -40,25 +52,39 @@ func readNumber(v int) int {
 	return v
 }
 
+func readSymbol(c rune) *types.Symbol {
+	n := scn.Peek()
+	name := string(c)
+	for isDigit(n) || isSymbolRune(n) {
+		name += string(scn.Next())
+		n = scn.Peek()
+	} 
+	return &types.Symbol{
+		Name: name,
+	}
+}
+
 func readExpr() (types.Obj, error) {
 	c := scn.Next()
 	for c != scanner.EOF {
 		switch c {
 		case ' ', '\n', '\r', '\t':
-			return nil, nil
 		case '\'':
 			return readQuote()
 		case '-':
 			if isDigit(scn.Peek()) {
 				return types.Int{
-					-readNumber(int(scn.Next() - '0')),
+					Value: -readNumber(int(scn.Next() - '0')),
 				}, nil
 			}
 			fallthrough
 		default:
 			if isDigit(c) {
-				return types.Int{readNumber(int(c - '0'))}, nil
+				return types.Int{
+					Value: readNumber(int(c - '0')),
+				}, nil
 			}
+			return readSymbol(c), nil
 		}
 		c = scn.Next()
 	}

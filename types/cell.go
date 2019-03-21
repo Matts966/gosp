@@ -19,9 +19,9 @@ L:
 		switch c.Cdr.(type) {
 		case nil:
 			break L
-		case Cell:
+		case *Cell:
 			fmt.Print(" ")
-			c = c.Cdr.(Cell)
+			c = *c.Cdr.(*Cell)
 		default:
 			fmt.Print(" . ")
 			c.Cdr.Print()
