@@ -1,7 +1,7 @@
 .PHONY: build clean test
 
 build: 
-	go build -o gosp gosp.go
+	go build
 
 clean:
 	rm -f gosp *~
