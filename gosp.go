@@ -11,6 +11,7 @@ import (
 )
 
 var scn scanner.Scanner
+var env types.Env
 
 func init() {
 	scn.Init(os.Stdin)
@@ -37,7 +38,7 @@ func isSymbolRune(r rune) bool {
 	if 'a' <= r && r <= 'Z' {
 		return true
 	}
-	for _, s := range(types.Symbols) {
+	for _, s := range types.Symbols {
 		if s == r {
 			return true
 		}
@@ -58,7 +59,7 @@ func readSymbol(c rune) *types.Symbol {
 	for isDigit(n) || isSymbolRune(n) {
 		name += string(scn.Next())
 		n = scn.Peek()
-	} 
+	}
 	return &types.Symbol{
 		Name: name,
 	}
@@ -91,6 +92,30 @@ func readExpr() (types.Obj, error) {
 	return nil, io.EOF
 }
 
+func eval(obj types.Obj) (types.Obj, error) {
+	switch o := obj.(type) {
+	case types.Int:
+		return obj, nil
+	case types.Symbol:
+		bind, err := env.Find(&obj)
+		if err != nil {
+			return nil, err
+		}
+		if nil == bind {
+			return nil, fmt.Errorf("Undefined symbol: %s", o.Name)
+		}
+		switch b := (*bind).(type) {
+		case *types.Cell:
+			return *b.Cdr, nil
+		default:
+			return nil, fmt.Errorf("Unknown type symbol: %s", o.Name)
+		}
+	case types.Cell:
+		// Function application
+	}
+	return nil, fmt.Errorf("Unknown type expression: %#v", obj)
+}
+
 func main() {
 	for {
 		obj, err := readExpr()
@@ -104,6 +129,11 @@ func main() {
 		if nil == obj {
 			continue
 		}
-		obj.Print()
+		o, err := eval(obj)
+		if nil != err {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+		o.Print()
 	}
 }
