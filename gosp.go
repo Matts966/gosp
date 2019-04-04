@@ -10,11 +10,30 @@ import (
 	"github.com/Matts966/gosp/types"
 )
 
-var scn scanner.Scanner
-var env types.Env
+var (
+	scn scanner.Scanner
+
+	env       types.Env  = types.Env{}
+	primQuote types.Prim = func(env *types.Env, args *types.Obj) (*types.Obj, error) {
+		argList, ok := (*args).(types.Cell)
+		if !ok{
+			return nil, fmt.Errorf("args is not list")
+		}
+		l, err := argList.Length()
+		if err != nil {
+			return nil, err
+		}
+		if 1 != l {
+			return nil, fmt.Errorf("malformed quote")
+		}
+		return argList.Car, nil
+	}
+)
 
 func init() {
 	scn.Init(os.Stdin)
+
+	env.AddObj("quote", &primQuote)
 }
 
 func readQuote() (types.Obj, error) {
@@ -102,18 +121,31 @@ func eval(obj types.Obj) (types.Obj, error) {
 			return nil, err
 		}
 		if nil == bind {
-			return nil, fmt.Errorf("Undefined symbol: %s", o.Name)
+			return nil, fmt.Errorf("undefined symbol: %s", o.Name)
 		}
 		switch b := (*bind).(type) {
-		case *types.Cell:
+		case types.Cell:
 			return *b.Cdr, nil
 		default:
-			return nil, fmt.Errorf("Unknown type symbol: %s", o.Name)
+			return nil, fmt.Errorf("unknown type symbol: %s, b: %+v", o.Name, b)
 		}
 	case types.Cell:
 		// Function application
+		fn, err := eval(*o.Car)
+		if err != nil {
+			return nil, fmt.Errorf("falied to get functon: %+v, err: %+v", fn, err)
+		}
+		f, ok := fn.(types.Func)
+		if !ok {
+			return nil, fmt.Errorf("the head of a list must be a function, head: %+v", fn)
+		}
+		ret, err := f.Apply(&env, o.Cdr)
+		if nil == ret {
+			return nil, err
+		}
+		return *ret, err
 	}
-	return nil, fmt.Errorf("Unknown type expression: %#v", obj)
+	return nil, fmt.Errorf("unknown type expression: %#v", obj)
 }
 
 func main() {

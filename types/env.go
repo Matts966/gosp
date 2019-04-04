@@ -27,15 +27,29 @@ func (e *Env) Find(sym *Obj) (*Obj, error) {
 	for p := e; p != nil; p = p.up {
 		cell := p.vars
 		for {
+			if nil == cell {
+				return nil, nil
+			}
+			if nil == cell.Car {
+				return nil, nil
+			}
 			switch bind := (*(cell.Car)).(type) {
 			case nil:
-				continue
-			case *Cell:
-				if sym == bind.Car {
+				break
+			case Cell:
+				s, ok := (*sym).(Symbol)
+				if !ok {
+					return nil, fmt.Errorf("passed sym is not Symbol")
+				}
+				bc, ok := (*(bind.Car)).(Symbol)
+				if !ok {
+					return nil, fmt.Errorf("symbol in env is not Symbol")
+				}
+				if s.Name == bc.Name {
 					return cell.Car, nil
 				}
 			default:
-				continue
+				return nil, fmt.Errorf("unknown bind type, bind: %#v", bind)
 			}
 
 			switch next := (*(cell.Cdr)).(type) {
@@ -44,9 +58,16 @@ func (e *Env) Find(sym *Obj) (*Obj, error) {
 			case *Cell:
 				cell = next
 			default:
-				break
+				return nil, fmt.Errorf("unknown next type, next: %#v", next)
 			}
 		}
 	}
 	return nil, nil
+}
+
+func (e *Env) AddObj(name string, obj Obj) {
+	new := Cons(Cons(Symbol{
+		Name: name,
+	}, obj), e.vars)
+	e.vars = &new
 }
