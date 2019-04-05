@@ -4,8 +4,8 @@ import "fmt"
 
 // Cell type.
 type Cell struct {
-	Car *Obj
-	Cdr *Obj
+	Car Obj
+	Cdr Obj
 }
 
 func (c Cell) Print() {
@@ -15,13 +15,13 @@ L:
 		if nil == c.Car {
 			break L
 		}
-		(*(c.Car)).Print()
-		switch v := (*(c.Cdr)).(type) {
+		(c.Car).Print()
+		switch v := c.Cdr.(type) {
 		case nil:
 			break L
-		case *Cell:
+		case Cell:
 			fmt.Print(" ")
-			c = *v
+			c = v
 		default:
 			fmt.Print(" . ")
 			v.Print()
@@ -34,10 +34,7 @@ L:
 func (c Cell) Length() (int, error) {
 	len := 1
 	for {
-		if c.Cdr == nil {
-			return len, nil
-		}
-		switch cdr := (*c.Cdr).(type) {
+		switch cdr := c.Cdr.(type) {
 		case nil:
 			return len, nil
 		case Cell:
@@ -52,7 +49,7 @@ func (c Cell) Length() (int, error) {
 // Cons gets Car, Cdr and return cell pointer.
 func Cons(Car Obj, Cdr Obj) Cell {
 	return Cell{
-		Car: &Car,
-		Cdr: &Cdr,
+		Car: Car,
+		Cdr: Cdr,
 	}
 }

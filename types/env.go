@@ -23,7 +23,7 @@ func (e Env) Print() {
 }
 
 // Find finds symbols from environment.
-func (e *Env) Find(sym *Obj) (*Obj, error) {
+func (e *Env) Find(sym Symbol) (Obj, error) {
 	for p := e; p != nil; p = p.up {
 		cell := p.vars
 		for {
@@ -33,26 +33,22 @@ func (e *Env) Find(sym *Obj) (*Obj, error) {
 			if nil == cell.Car {
 				return nil, nil
 			}
-			switch bind := (*(cell.Car)).(type) {
+			switch bind := cell.Car.(type) {
 			case nil:
 				break
 			case Cell:
-				s, ok := (*sym).(Symbol)
-				if !ok {
-					return nil, fmt.Errorf("passed sym is not Symbol")
-				}
-				bc, ok := (*(bind.Car)).(Symbol)
+				bc, ok := bind.Car.(Symbol)
 				if !ok {
 					return nil, fmt.Errorf("symbol in env is not Symbol")
 				}
-				if s.Name == bc.Name {
+				if sym.Name == bc.Name {
 					return cell.Car, nil
 				}
 			default:
 				return nil, fmt.Errorf("unknown bind type, bind: %#v", bind)
 			}
 
-			switch next := (*(cell.Cdr)).(type) {
+			switch next := cell.Cdr.(type) {
 			case nil:
 				break
 			case *Cell:

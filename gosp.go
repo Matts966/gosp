@@ -14,8 +14,8 @@ var (
 	scn scanner.Scanner
 
 	env       types.Env  = types.Env{}
-	primQuote types.Prim = func(env *types.Env, args *types.Obj) (*types.Obj, error) {
-		argList, ok := (*args).(types.Cell)
+	primQuote types.Prim = func(env *types.Env, args types.Obj) (types.Obj, error) {
+		argList, ok := args.(types.Cell)
 		if !ok{
 			return nil, fmt.Errorf("args is not list")
 		}
@@ -116,22 +116,22 @@ func eval(obj types.Obj) (types.Obj, error) {
 	case types.Int:
 		return obj, nil
 	case types.Symbol:
-		bind, err := env.Find(&obj)
+		bind, err := env.Find(o)
 		if err != nil {
 			return nil, err
 		}
 		if nil == bind {
 			return nil, fmt.Errorf("undefined symbol: %s", o.Name)
 		}
-		switch b := (*bind).(type) {
+		switch b := bind.(type) {
 		case types.Cell:
-			return *b.Cdr, nil
+			return b.Cdr, nil
 		default:
 			return nil, fmt.Errorf("unknown type symbol: %s, b: %+v", o.Name, b)
 		}
 	case types.Cell:
 		// Function application
-		fn, err := eval(*o.Car)
+		fn, err := eval(o.Car)
 		if err != nil {
 			return nil, fmt.Errorf("falied to get functon: %+v, err: %+v", fn, err)
 		}
@@ -140,10 +140,7 @@ func eval(obj types.Obj) (types.Obj, error) {
 			return nil, fmt.Errorf("the head of a list must be a function, head: %+v", fn)
 		}
 		ret, err := f.Apply(&env, o.Cdr)
-		if nil == ret {
-			return nil, err
-		}
-		return *ret, err
+		return ret, err
 	}
 	return nil, fmt.Errorf("unknown type expression: %#v", obj)
 }
