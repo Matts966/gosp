@@ -141,7 +141,7 @@ func readExpr() (types.Obj, error) {
 					Value: readNumber(int(c - '0')),
 				}, nil
 			}
-			return *readSymbol(c), nil
+			return readSymbol(c), nil
 		}
 		c = scn.Next()
 	}
