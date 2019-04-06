@@ -8,8 +8,8 @@ import (
 	"strconv"
 
 	"github.com/Matts966/gosp/prims"
-	"github.com/Matts966/gosp/types"
 	"github.com/Matts966/gosp/scanner"
+	"github.com/Matts966/gosp/types"
 )
 
 var (
@@ -84,7 +84,8 @@ func readList() (types.Obj, error) {
 		return nil, nil
 	}
 	head := types.Cons(obj, nil)
-	tail := &head
+	var tail types.Obj
+	tail = &head
 	for {
 		obj, err := readExpr()
 		if err != nil {
@@ -94,7 +95,8 @@ func readList() (types.Obj, error) {
 		case nil:
 			return nil, fmt.Errorf("unclosed parenthesis")
 		case types.Dot:
-			tail.Cdr, err = readExpr()
+			t, _ := tail.(*types.Cell)
+			t.Cdr, err = readExpr()
 			if err != nil {
 				return nil, err
 			}
@@ -109,9 +111,10 @@ func readList() (types.Obj, error) {
 		case types.RParen:
 			return head, nil
 		default:
-			tail.Cdr = types.Cons(obj, nil)
-			tailI, _ := tail.Cdr.(types.Cell)
-			tail = &tailI
+			t, _ := tail.(*types.Cell)
+			nc := types.Cons(obj, nil)
+			t.Cdr = &nc
+			tail = t.Cdr
 		}
 	}
 }
@@ -150,10 +153,7 @@ func readExpr() (types.Obj, error) {
 }
 
 func eval(obj types.Obj) (types.Obj, error) {
-	obj, ok := reflect.Indirect(reflect.ValueOf(obj)).Interface().(types.Obj)
-	if !ok {
-		return nil, fmt.Errorf("failed to get value using reflect")
-	}
+	obj, _ = reflect.Indirect(reflect.ValueOf(obj)).Interface().(types.Obj)
 	switch o := obj.(type) {
 	case types.Int:
 		return obj, nil
@@ -215,5 +215,6 @@ func main() {
 			os.Exit(1)
 		}
 		o.Print()
+		fmt.Println()
 	}
 }

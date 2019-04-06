@@ -1,6 +1,9 @@
 package types
 
-import "fmt"
+import (
+	"fmt"
+	"reflect"
+)
 
 // Cell type.
 type Cell struct {
@@ -16,9 +19,11 @@ L:
 			break L
 		}
 		(c.Car).Print()
-		switch v := c.Cdr.(type) {
-		case nil:
-			break L
+		if c.Cdr == nil {
+			break
+		}
+		to, _ := reflect.Indirect(reflect.ValueOf(c.Cdr)).Interface().(Obj)
+		switch v := to.(type) {
 		case Cell:
 			fmt.Print(" ")
 			c = v
