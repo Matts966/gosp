@@ -9,10 +9,11 @@ import (
 
 	"github.com/Matts966/gosp/prims"
 	"github.com/Matts966/gosp/types"
+	"github.com/Matts966/gosp/scanner"
 )
 
 var (
-	scn Scanner
+	scn scanner.Scanner
 	env types.Env = types.Env{}
 )
 
@@ -117,7 +118,7 @@ func readList() (types.Obj, error) {
 
 func readExpr() (types.Obj, error) {
 	c := scn.Next()
-	for c != EOF {
+	for c != scanner.EOF {
 		switch c {
 		case ' ', '\n', '\r', '\t':
 		case '(':
