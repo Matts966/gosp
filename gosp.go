@@ -4,36 +4,21 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"reflect"
 	"strconv"
-	"text/scanner"
 
+	"github.com/Matts966/gosp/prims"
 	"github.com/Matts966/gosp/types"
 )
 
 var (
-	scn scanner.Scanner
-
-	env       types.Env  = types.Env{}
-	primQuote types.Prim = func(env *types.Env, args types.Obj) (types.Obj, error) {
-		argList, ok := args.(types.Cell)
-		if !ok{
-			return nil, fmt.Errorf("args is not list")
-		}
-		l, err := argList.Length()
-		if err != nil {
-			return nil, err
-		}
-		if 1 != l {
-			return nil, fmt.Errorf("malformed quote")
-		}
-		return argList.Car, nil
-	}
+	scn Scanner
+	env types.Env = types.Env{}
 )
 
 func init() {
 	scn.Init(os.Stdin)
-
-	env.AddObj("quote", &primQuote)
+	env.AddObj("quote", &prims.PrimQuote)
 }
 
 func readQuote() (types.Obj, error) {
@@ -54,7 +39,7 @@ func isDigit(r rune) bool {
 }
 
 func isSymbolRune(r rune) bool {
-	if 'a' <= r && r <= 'Z' {
+	if 'A' <= r && r <= 'z' {
 		return true
 	}
 	for _, s := range types.Symbols {
@@ -84,11 +69,63 @@ func readSymbol(c rune) *types.Symbol {
 	}
 }
 
+func readList() (types.Obj, error) {
+	obj, err := readExpr()
+	if err != nil {
+		return obj, err
+	}
+	switch obj.(type) {
+	case nil:
+		return nil, fmt.Errorf("unclosed parenthesis")
+	case types.Dot:
+		return nil, fmt.Errorf("stray dot")
+	case types.RParen:
+		return nil, nil
+	}
+	head := types.Cons(obj, nil)
+	tail := &head
+	for {
+		obj, err := readExpr()
+		if err != nil {
+			return nil, err
+		}
+		switch obj.(type) {
+		case nil:
+			return nil, fmt.Errorf("unclosed parenthesis")
+		case types.Dot:
+			tail.Cdr, err = readExpr()
+			if err != nil {
+				return nil, err
+			}
+			nx, err := readExpr()
+			if err != nil {
+				return nil, err
+			}
+			if _, ok := nx.(types.RParen); !ok {
+				return nil, fmt.Errorf("closed parenthesis expected after dot")
+			}
+			return head, nil
+		case types.RParen:
+			return head, nil
+		default:
+			tail.Cdr = types.Cons(obj, nil)
+			tailI, _ := tail.Cdr.(types.Cell)
+			tail = &tailI
+		}
+	}
+}
+
 func readExpr() (types.Obj, error) {
 	c := scn.Next()
-	for c != scanner.EOF {
+	for c != EOF {
 		switch c {
 		case ' ', '\n', '\r', '\t':
+		case '(':
+			return readList()
+		case ')':
+			return types.RParen{}, nil
+		case '.':
+			return types.Dot{}, nil
 		case '\'':
 			return readQuote()
 		case '-':
@@ -104,7 +141,7 @@ func readExpr() (types.Obj, error) {
 					Value: readNumber(int(c - '0')),
 				}, nil
 			}
-			return readSymbol(c), nil
+			return *readSymbol(c), nil
 		}
 		c = scn.Next()
 	}
@@ -112,6 +149,10 @@ func readExpr() (types.Obj, error) {
 }
 
 func eval(obj types.Obj) (types.Obj, error) {
+	obj, ok := reflect.Indirect(reflect.ValueOf(obj)).Interface().(types.Obj)
+	if !ok {
+		return nil, fmt.Errorf("failed to get value using reflect")
+	}
 	switch o := obj.(type) {
 	case types.Int:
 		return obj, nil
@@ -155,9 +196,18 @@ func main() {
 			fmt.Println(err)
 			os.Exit(1)
 		}
-		if nil == obj {
+
+		switch obj.(type) {
+		case nil:
 			continue
+		case types.Dot:
+			fmt.Println(fmt.Errorf("stray dot"))
+			os.Exit(1)
+		case types.RParen:
+			fmt.Println(fmt.Errorf("unmatched right parenthesis"))
+			os.Exit(1)
 		}
+
 		o, err := eval(obj)
 		if nil != err {
 			fmt.Println(err)
