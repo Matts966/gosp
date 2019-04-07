@@ -6,13 +6,19 @@ import "fmt"
 type Dot struct {}
 
 func (d Dot) Print() {
-	fmt.Print('.')
+	fmt.Print(".")
 }
 
 // RParen type
-
 type RParen struct {}
 
 func (r RParen) Print() {
-	fmt.Print(')')
+	fmt.Print(")")
+}
+
+// True type
+type True struct {}
+
+func (r True) Print() {
+	fmt.Print("t")
 }

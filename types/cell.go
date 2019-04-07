@@ -36,14 +36,17 @@ L:
 	fmt.Print(")")
 }
 
-func (c Cell) Length() (int, error) {
+func (c *Cell) Length() (int, error) {
+	cp := c
 	len := 1
 	for {
-		switch cdr := c.Cdr.(type) {
-		case nil:
+		if nil == cp.Cdr {
 			return len, nil
+		}
+		cdr, _ := reflect.Indirect(reflect.ValueOf(cp.Cdr)).Interface().(Obj)
+		switch c := cdr.(type) {
 		case Cell:
-			c = cdr
+			cp = &c
 			len++
 		default:
 			return 0, fmt.Errorf("cannot handle dotted list")
