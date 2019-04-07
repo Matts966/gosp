@@ -8,12 +8,8 @@ import (
 )
 
 // PrimPlus is primitive function returning the sum of list.
-var PrimPlus types.Prim = func(env *types.Env, args types.Obj) (types.Obj, error) {
-	args, _ = reflect.Indirect(reflect.ValueOf(args)).Interface().(types.Obj)
-	argList, ok := args.(types.Cell)
-	if !ok {
-		return nil, fmt.Errorf("args is not list")
-	}
+var PrimPlus types.Prim = func(env *types.Env, args *types.Cell) (types.Obj, error) {
+	argList := *args
 
 	val := 0
 	for {

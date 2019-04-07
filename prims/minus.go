@@ -8,13 +8,8 @@ import (
 )
 
 // PrimMinus is primitive function in form of (- ~).
-var PrimMinus types.Prim = func(env *types.Env, args types.Obj) (types.Obj, error) {
-	args, _ = reflect.Indirect(reflect.ValueOf(args)).Interface().(types.Obj)
-	argList, ok := args.(types.Cell)
-	if !ok {
-		return nil, fmt.Errorf("args is not list")
-	}
-
+var PrimMinus types.Prim = func(env *types.Env, args *types.Cell) (types.Obj, error) {
+	argList := *args
 	if nil == argList.Car {
 		return types.Int{Value: 0}, nil
 	}

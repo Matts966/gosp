@@ -179,10 +179,17 @@ func eval(obj types.Obj) (types.Obj, error) {
 		}
 		f, ok := fn.(types.Func)
 		if !ok {
-			return nil, fmt.Errorf("the head of a list must be a function, head: %+v", fn)
+			return nil, fmt.Errorf("the head of a list must be a function, head: %#v", fn)
 		}
-		ret, err := f.Apply(&env, o.Cdr)
-		return ret, err
+		if o.Cdr == nil {
+			return f.Apply(&env, nil)
+		}
+		ocd, _ := reflect.Indirect(reflect.ValueOf(o.Cdr)).Interface().(types.Obj)
+		c, ok := ocd.(types.Cell)
+		if !ok {
+			return nil, fmt.Errorf("args is not list, args: %#v", o.Cdr)
+		}
+		return f.Apply(&env, &c)
 	}
 	return nil, fmt.Errorf("unknown type expression: %#v", obj)
 }
