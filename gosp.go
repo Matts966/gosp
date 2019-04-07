@@ -19,7 +19,7 @@ var (
 
 func init() {
 	scn.Init(os.Stdin)
-	env.AddObj("quote", &prims.PrimQuote)
+	prims.AddPrims(&env)
 }
 
 func readQuote() (types.Obj, error) {
