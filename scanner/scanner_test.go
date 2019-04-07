@@ -50,6 +50,7 @@ func TestEOFUsingFile(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	defer f.Close()
 	scn.Init(f)
 	for {
 		if scanner.EOF == scn.Peek() {
