@@ -7,7 +7,7 @@ import (
 	"github.com/Matts966/gosp/types"
 )
 
-// PrimQuote is in form of (quote ~).
+// PrimPlus is primitive function returning the sum of list.
 var PrimPlus types.Prim = func(env *types.Env, args types.Obj) (types.Obj, error) {
 	args, _ = reflect.Indirect(reflect.ValueOf(args)).Interface().(types.Obj)
 	argList, ok := args.(types.Cell)
