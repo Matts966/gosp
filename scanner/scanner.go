@@ -20,6 +20,9 @@ func (s *Scanner) Init(r io.Reader) {
 func (s *Scanner) Peek() rune {
 	r, _, err := s.reader.ReadRune()
 	if err != nil {
+		if err == io.EOF {
+			return EOF
+		}
 		panic(err)
 	}
 	s.reader.UnreadRune()
