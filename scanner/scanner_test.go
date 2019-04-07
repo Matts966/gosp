@@ -34,6 +34,18 @@ func TestNext(t *testing.T) {
 }
 
 func TestEOF(t *testing.T) {
+	scn.Init(strings.NewReader(str))
+	for {
+		if scanner.EOF == scn.Peek() {
+			t.Logf("%v", scn.Next())
+			break
+		} else {
+			t.Logf("%v", scn.Next())
+		}
+	}
+}
+
+func TestEOFUsingFile(t *testing.T) {
 	f, err := os.Open(`./data.txt`)
 	if err != nil {
 		t.Fatal(err)
