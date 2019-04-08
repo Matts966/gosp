@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"reflect"
 	"strconv"
 
+	"github.com/Matts966/gosp/evaluator"
 	"github.com/Matts966/gosp/prims"
 	"github.com/Matts966/gosp/scanner"
 	"github.com/Matts966/gosp/types"
@@ -152,48 +152,6 @@ func readExpr() (types.Obj, error) {
 	return nil, io.EOF
 }
 
-func eval(obj types.Obj) (types.Obj, error) {
-	obj, _ = reflect.Indirect(reflect.ValueOf(obj)).Interface().(types.Obj)
-	switch o := obj.(type) {
-	case types.Int:
-		return obj, nil
-	case types.Symbol:
-		bind, err := env.Find(o)
-		if err != nil {
-			return nil, err
-		}
-		if nil == bind {
-			return nil, fmt.Errorf("undefined symbol: %s", o.Name)
-		}
-		switch b := bind.(type) {
-		case types.Cell:
-			return b.Cdr, nil
-		default:
-			return nil, fmt.Errorf("unknown type symbol: %s, b: %+v", o.Name, b)
-		}
-	case types.Cell:
-		// Function application
-		fn, err := eval(o.Car)
-		if err != nil {
-			return nil, fmt.Errorf("falied to get functon: %+v, err: %+v", fn, err)
-		}
-		f, ok := fn.(types.Func)
-		if !ok {
-			return nil, fmt.Errorf("the head of a list must be a function, head: %#v", fn)
-		}
-		if o.Cdr == nil {
-			return f.Apply(&env, nil)
-		}
-		ocd, _ := reflect.Indirect(reflect.ValueOf(o.Cdr)).Interface().(types.Obj)
-		c, ok := ocd.(types.Cell)
-		if !ok {
-			return nil, fmt.Errorf("args is not list, args: %#v", o.Cdr)
-		}
-		return f.Apply(&env, &c)
-	}
-	return nil, fmt.Errorf("unknown type expression: %#v", obj)
-}
-
 func main() {
 	for {
 		obj, err := readExpr()
@@ -216,7 +174,7 @@ func main() {
 			os.Exit(1)
 		}
 
-		o, err := eval(obj)
+		o, err := evaluator.Eval(&env, obj)
 		if nil != err {
 			fmt.Println(err)
 			os.Exit(1)
