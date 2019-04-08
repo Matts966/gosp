@@ -46,7 +46,7 @@ func TestEOF(t *testing.T) {
 }
 
 func TestEOFUsingFile(t *testing.T) {
-	f, err := os.Open(`./data.txt`)
+	f, err := os.Open(`./test_data.txt`)
 	if err != nil {
 		t.Fatal(err)
 	}
