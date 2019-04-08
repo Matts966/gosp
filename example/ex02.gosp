@@ -1,0 +1,16 @@
+(define cell '(
+
+'a
+
+'b
+
+'c
+
+)
+
+)
+
+(cons 
+    cell 
+        (< 4 5)
+)

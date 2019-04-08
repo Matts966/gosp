@@ -5,6 +5,7 @@ import (
 	"io"
 	"os"
 	"strconv"
+	"strings"
 
 	"github.com/Matts966/gosp/evaluator"
 	"github.com/Matts966/gosp/prims"
@@ -160,8 +161,9 @@ func readExpr() (types.Obj, error) {
 	return nil, io.EOF
 }
 
-func main() {
+func repl(prompt string) {
 	for {
+		fmt.Print(prompt)
 		obj, err := readExpr()
 		if err == io.EOF {
 			os.Exit(0)
@@ -190,5 +192,27 @@ func main() {
 		}
 		o.Print()
 		fmt.Println()
+	}
+}
+
+func main() {
+	if len(os.Args) < 2 {
+		repl("gosp~> ")
+	} else if "test" == os.Args[1] {
+		repl("")
+	}
+
+	for i, fp := range os.Args {
+		if 0 == i {
+			continue
+		}
+		if strings.HasSuffix(fp, ".gosp") {
+			f, err := os.Open(fp)
+			if err != nil {
+				panic(err)
+			}
+			scn.Init(f)
+			repl("")
+		}
 	}
 }

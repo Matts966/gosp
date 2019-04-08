@@ -1,0 +1,3 @@
+(define sym (cons '111 '123)) 
+(setcar sym '789) 
+sym
