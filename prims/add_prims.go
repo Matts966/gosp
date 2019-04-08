@@ -9,4 +9,5 @@ func AddPrims(env *types.Env) {
 	env.AddObj("<", &PrimLessThan)
 	env.AddObj("cons", &PrimCons)
 	env.AddObj("car", &PrimCar)
+	env.AddObj("cdr", &PrimCdr)
 }
