@@ -24,6 +24,8 @@ L:
 		}
 		to, _ := reflect.Indirect(reflect.ValueOf(c.Cdr)).Interface().(Obj)
 		switch v := to.(type) {
+		case False:
+			break L
 		case Cell:
 			fmt.Print(" ")
 			c = v

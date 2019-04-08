@@ -8,6 +8,9 @@ import (
 )
 
 func Eval(env *types.Env, obj types.Obj) (types.Obj, error) {
+	if obj == nil {
+		return nil, fmt.Errorf("nil value is passed to function Eval")
+	}
 	obj, _ = reflect.Indirect(reflect.ValueOf(obj)).Interface().(types.Obj)
 	switch o := obj.(type) {
 	case types.Int:
@@ -45,6 +48,8 @@ func Eval(env *types.Env, obj types.Obj) (types.Obj, error) {
 			return nil, fmt.Errorf("args is not list, args: %#v", o.Cdr)
 		}
 		return f.Apply(env, &c)
+	default:
+		return o, nil
 	}
 	return nil, fmt.Errorf("unknown type expression: %#v", obj)
 }

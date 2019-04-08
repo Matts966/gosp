@@ -22,3 +22,10 @@ type True struct{}
 func (r True) Print() {
 	fmt.Print("t")
 }
+
+// False type
+type False struct{}
+
+func (f False) Print() {
+	fmt.Print("()")
+}

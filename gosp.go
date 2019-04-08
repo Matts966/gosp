@@ -77,13 +77,21 @@ func readList() (types.Obj, error) {
 	}
 	switch obj.(type) {
 	case nil:
+		obj, err := readExpr()
+		if err != nil {
+			return obj, err
+		}
+		if _, ok := obj.(types.RParen); ok {
+			return types.Cell{}, nil
+		}
 		return nil, fmt.Errorf("unclosed parenthesis")
 	case types.Dot:
 		return nil, fmt.Errorf("stray dot")
 	case types.RParen:
-		return nil, nil
+		return types.False{}, nil
 	}
 	head := types.Cons(obj, nil)
+
 	var tail types.Obj
 	tail = &head
 	for {
@@ -165,7 +173,8 @@ func main() {
 
 		switch obj.(type) {
 		case nil:
-			continue
+			fmt.Println(fmt.Errorf("reading expression returns nil"))
+			os.Exit(1)
 		case types.Dot:
 			fmt.Println(fmt.Errorf("stray dot"))
 			os.Exit(1)
