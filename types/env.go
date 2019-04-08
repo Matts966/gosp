@@ -22,7 +22,7 @@ func (e Env) Print() {
 	}
 }
 
-// Find finds symbols from environment.
+// Find finds symbols from environment and returns its pointer.
 func (e *Env) Find(sym Symbol) (Obj, error) {
 	for p := e; p != nil; p = p.up {
 		cell := p.vars
