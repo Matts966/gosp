@@ -27,13 +27,13 @@ var PrimIf types.Prim = func(env *types.Env, args *types.Cell) (types.Obj, error
 		return evaluator.Eval(env, reflect.Indirect(reflect.ValueOf(args.Cdr)).Interface().(types.Cell).Car)
 	}
 
-	if els := reflect.Indirect(reflect.ValueOf(args.Cdr)).Interface().(types.Cell).Cdr; nil == els {
+	els := reflect.Indirect(reflect.ValueOf(args.Cdr)).Interface().(types.Cell).Cdr
+	if nil == els {
 		return types.False{}, nil
+	}
+	if elsc, ok := reflect.Indirect(reflect.ValueOf(els)).Interface().(types.Cell); !ok {
+		return nil, fmt.Errorf("dotted list was passed to primitive function if")
 	} else {
-		if elsc, ok := reflect.Indirect(reflect.ValueOf(els)).Interface().(types.Cell); !ok {
-			return nil, fmt.Errorf("dotted list was passed to primitive function if")
-		} else {
-			return evaluator.Eval(env, elsc.Car)
-		}
+		return Progn(env, &elsc)
 	}
 }

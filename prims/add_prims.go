@@ -14,4 +14,5 @@ func AddPrims(env *types.Env) {
 	env.AddObj("setcar", &PrimSetCar)
 	env.AddObj("setq", &PrimSetq)
 	env.AddObj("if", &PrimIf)
+	env.AddObj("progn", &PrimProgn)
 }
