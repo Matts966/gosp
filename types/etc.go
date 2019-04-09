@@ -29,3 +29,10 @@ type False struct{}
 func (f False) Print() {
 	fmt.Print("()")
 }
+
+// Comment type
+type Comment struct{ String string }
+
+func (f Comment) Print() {
+	fmt.Print("")
+}
