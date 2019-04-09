@@ -9,7 +9,7 @@ import (
 )
 
 // PrimNumeq is primitive function returning the equality of int in form of (eq 3 3 3).
-var PrimNumeq types.Prim = func(env *types.Env, args *types.Cell) (types.Obj, error) {
+var PrimNumeq types.PF = func(env *types.Env, args *types.Cell) (types.Obj, error) {
 	args, err := evaluator.EvalCell(env, *args)
 	if err != nil {
 		return nil, err

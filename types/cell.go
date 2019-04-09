@@ -11,14 +11,14 @@ type Cell struct {
 	Cdr Obj
 }
 
-func (c Cell) toString() string {
+func (c Cell) String() string {
 	s := "("
 L:
 	for {
 		if nil == c.Car {
 			break L
 		}
-		s += c.Car.toString()
+		s += c.Car.String()
 		if c.Cdr == nil {
 			break
 		}
@@ -31,7 +31,7 @@ L:
 			c = v
 		default:
 			s += " . "
-			s += v.toString()
+			s += v.String()
 			break L
 		}
 	}

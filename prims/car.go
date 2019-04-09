@@ -9,7 +9,7 @@ import (
 )
 
 // PrimCar is primitive function in form of (car '(a b c)).
-var PrimCar types.Prim = func(env *types.Env, args *types.Cell) (types.Obj, error) {
+var PrimCar types.PF = func(env *types.Env, args *types.Cell) (types.Obj, error) {
 	c, err := evaluator.EvalCell(env, *args)
 	if err != nil {
 		return nil, err

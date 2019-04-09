@@ -9,7 +9,7 @@ import (
 )
 
 // PrimDefine is primitive function in form of (define a 'a).
-var PrimDefine types.Prim = func(env *types.Env, args *types.Cell) (types.Obj, error) {
+var PrimDefine types.PF = func(env *types.Env, args *types.Cell) (types.Obj, error) {
 	l, err := args.Length()
 	if err != nil {
 		return nil, err

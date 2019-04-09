@@ -9,8 +9,8 @@ import (
 )
 
 // PrimEq is primitive function returning the equality in form of (eq 'a 'b 'c).
-var PrimEq types.Prim = func(env *types.Env, args *types.Cell) (types.Obj, error) {
-	args, err := evaluator.EvalCell(env, *args)
+var PrimEq types.PF = func(env *types.Env, cell *types.Cell) (types.Obj, error) {
+	args, err := evaluator.EvalCell(env, *cell)
 	if err != nil {
 		return nil, err
 	}
@@ -19,18 +19,19 @@ var PrimEq types.Prim = func(env *types.Env, args *types.Cell) (types.Obj, error
 		if nil == argList.Car {
 			break
 		}
-
 		if argList.Cdr == nil {
 			break
 		}
 		to, _ := reflect.Indirect(reflect.ValueOf(argList.Cdr)).Interface().(types.Obj)
-
 		switch v := to.(type) {
 		case types.Cell:
-			x := reflect.Indirect(reflect.ValueOf(argList.Car)).Interface()
-			y := reflect.Indirect(reflect.ValueOf(v.Car)).Interface()
-			if x != y {
+			if argList.Car.String() != v.Car.String() {
 				return types.False{}, nil
+			}
+			if f, ok := argList.Car.(types.Func); ok {
+				if !f.Eq(v.Car) {
+					return types.False{}, nil
+				}
 			}
 			argList = v
 		default:

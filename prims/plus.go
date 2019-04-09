@@ -9,7 +9,7 @@ import (
 )
 
 // PrimPlus is primitive function returning the sum of list.
-var PrimPlus types.Prim = func(env *types.Env, args *types.Cell) (types.Obj, error) {
+var PrimPlus types.PF = func(env *types.Env, args *types.Cell) (types.Obj, error) {
 	args, err := evaluator.EvalCell(env, *args)
 	if err != nil {
 		return nil, err

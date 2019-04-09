@@ -9,7 +9,7 @@ import (
 )
 
 // PrimIf is in form of (if t texpr fexpr).
-var PrimIf types.Prim = func(env *types.Env, args *types.Cell) (types.Obj, error) {
+var PrimIf types.PF = func(env *types.Env, args *types.Cell) (types.Obj, error) {
 	l, err := args.Length()
 	if err != nil {
 		return nil, fmt.Errorf("failed to get the length of args, err: %v", err)

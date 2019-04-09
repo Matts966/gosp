@@ -9,7 +9,7 @@ import (
 )
 
 // PrimCons is primitive function in form of (cons a b).
-var PrimCons types.Prim = func(env *types.Env, args *types.Cell) (types.Obj, error) {
+var PrimCons types.PF = func(env *types.Env, args *types.Cell) (types.Obj, error) {
 	argList := *args
 	l, err := argList.Length()
 	if err != nil {

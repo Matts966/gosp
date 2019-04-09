@@ -8,6 +8,6 @@ type Symbol struct {
 	Name string
 }
 
-func (s Symbol) toString() string {
+func (s Symbol) String() string {
 	return s.Name
 }

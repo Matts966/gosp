@@ -9,7 +9,7 @@ import (
 )
 
 // PrimSetCar is in form of (setcar ~).
-var PrimSetCar types.Prim = func(env *types.Env, args *types.Cell) (types.Obj, error) {
+var PrimSetCar types.PF = func(env *types.Env, args *types.Cell) (types.Obj, error) {
 	l, err := args.Length()
 	if err != nil {
 		return nil, fmt.Errorf("failed to get the length of args, err: %v", err)

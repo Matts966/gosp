@@ -29,6 +29,6 @@ func Progn(env *types.Env, args *types.Cell) (types.Obj, error) {
 }
 
 // PrimProgn is primitive function that evaluates all the item in cell and returns the last value.
-var PrimProgn types.Prim = func(env *types.Env, args *types.Cell) (types.Obj, error) {
+var PrimProgn types.PF = func(env *types.Env, args *types.Cell) (types.Obj, error) {
 	return Progn(env, args)
 }

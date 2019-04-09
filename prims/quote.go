@@ -7,7 +7,7 @@ import (
 )
 
 // PrimQuote is in form of (quote ~).
-var PrimQuote types.Prim = func(env *types.Env, args *types.Cell) (types.Obj, error) {
+var PrimQuote types.PF = func(env *types.Env, args *types.Cell) (types.Obj, error) {
 	argList := *args
 	l, err := argList.Length()
 	if err != nil {

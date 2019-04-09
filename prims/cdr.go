@@ -9,7 +9,7 @@ import (
 )
 
 // PrimCdr is primitive function in form of (cdr ~).
-var PrimCdr types.Prim = func(env *types.Env, args *types.Cell) (types.Obj, error) {
+var PrimCdr types.PF = func(env *types.Env, args *types.Cell) (types.Obj, error) {
 	c, err := evaluator.EvalCell(env, *args)
 	if err != nil {
 		return nil, err

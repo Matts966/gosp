@@ -3,34 +3,34 @@ package types
 // Dot type.
 type Dot struct{}
 
-func (d Dot) toString() string {
+func (d Dot) String() string {
 	return "."
 }
 
 // RParen type
 type RParen struct{}
 
-func (r RParen) toString() string {
+func (r RParen) String() string {
 	return ")"
 }
 
 // True type
 type True struct{}
 
-func (r True) toString() string {
+func (r True) String() string {
 	return "t"
 }
 
 // False type
 type False struct{}
 
-func (f False) toString() string {
+func (f False) String() string {
 	return "()"
 }
 
 // Comment type
-type Comment struct{ String string }
+type Comment struct{ Content string }
 
-func (c Comment) toString() string {
-	return c.String
+func (c Comment) String() string {
+	return c.Content
 }

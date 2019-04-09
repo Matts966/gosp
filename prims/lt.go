@@ -8,7 +8,7 @@ import (
 )
 
 // PrimLessThan is primitive function in form of (> a b).
-var PrimLessThan types.Prim = func(env *types.Env, args *types.Cell) (types.Obj, error) {
+var PrimLessThan types.PF = func(env *types.Env, args *types.Cell) (types.Obj, error) {
 	argList := *args
 	l, err := argList.Length()
 	if err != nil {

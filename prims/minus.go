@@ -9,7 +9,7 @@ import (
 )
 
 // PrimMinus is primitive function in form of (- ~).
-var PrimMinus types.Prim = func(env *types.Env, args *types.Cell) (types.Obj, error) {
+var PrimMinus types.PF = func(env *types.Env, args *types.Cell) (types.Obj, error) {
 	args, err := evaluator.EvalCell(env, *args)
 	if err != nil {
 		return nil, err

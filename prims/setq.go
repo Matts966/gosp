@@ -8,7 +8,7 @@ import (
 )
 
 // PrimSetq is in form of (setq symbol val).
-var PrimSetq types.Prim = func(env *types.Env, args *types.Cell) (types.Obj, error) {
+var PrimSetq types.PF = func(env *types.Env, args *types.Cell) (types.Obj, error) {
 	l, err := args.Length()
 	if err != nil {
 		return nil, fmt.Errorf("failed to get the length of args, err: %v", err)

@@ -8,13 +8,13 @@ type Env struct {
 	up   *Env
 }
 
-func (e Env) toString() string {
+func (e Env) String() string {
 	s := "Env: "
 	for {
 		if nil == e.vars {
 			return s
 		}
-		s += (*(e.vars)).toString()
+		s += (*(e.vars)).String()
 		if nil == e.up {
 			return s
 		}

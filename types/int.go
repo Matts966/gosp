@@ -9,6 +9,6 @@ type Int struct {
 	Value int
 }
 
-func (i Int) toString() string {
+func (i Int) String() string {
 	return strconv.Itoa(i.Value)
 }
