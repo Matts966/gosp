@@ -4,13 +4,17 @@ import (
 	"fmt"
 	"reflect"
 
+	"github.com/Matts966/gosp/evaluator"
 	"github.com/Matts966/gosp/types"
 )
 
 // PrimPlus is primitive function returning the sum of list.
 var PrimPlus types.Prim = func(env *types.Env, args *types.Cell) (types.Obj, error) {
+	args, err := evaluator.EvalCell(env, *args)
+	if err != nil {
+		return nil, err
+	}
 	argList := *args
-
 	val := 0
 	for {
 		if nil == argList.Car {

@@ -4,11 +4,16 @@ import (
 	"fmt"
 	"reflect"
 
+	"github.com/Matts966/gosp/evaluator"
 	"github.com/Matts966/gosp/types"
 )
 
 // PrimMinus is primitive function in form of (- ~).
 var PrimMinus types.Prim = func(env *types.Env, args *types.Cell) (types.Obj, error) {
+	args, err := evaluator.EvalCell(env, *args)
+	if err != nil {
+		return nil, err
+	}
 	argList := *args
 	if nil == argList.Car {
 		return types.Int{Value: 0}, nil
