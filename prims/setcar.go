@@ -15,7 +15,7 @@ var PrimSetCar types.Prim = func(env *types.Env, args *types.Cell) (types.Obj, e
 		return nil, fmt.Errorf("failed to get the length of args, err: %v", err)
 	}
 	if 2 != l {
-		return nil, fmt.Errorf("malformed lt")
+		return nil, fmt.Errorf("malformed setcar")
 	}
 	args, err = evaluator.EvalCell(env, *args)
 	if err != nil {
