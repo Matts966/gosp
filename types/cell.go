@@ -11,14 +11,14 @@ type Cell struct {
 	Cdr Obj
 }
 
-func (c Cell) Print() {
-	fmt.Print("(")
+func (c Cell) toString() string {
+	s := "("
 L:
 	for {
 		if nil == c.Car {
 			break L
 		}
-		(c.Car).Print()
+		s += c.Car.toString()
 		if c.Cdr == nil {
 			break
 		}
@@ -27,15 +27,15 @@ L:
 		case False:
 			break L
 		case Cell:
-			fmt.Print(" ")
+			s += " "
 			c = v
 		default:
-			fmt.Print(" . ")
-			v.Print()
+			s += " . "
+			s += v.toString()
 			break L
 		}
 	}
-	fmt.Print(")")
+	return s + ")"
 }
 
 func (c *Cell) Length() (int, error) {

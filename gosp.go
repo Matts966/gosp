@@ -56,8 +56,7 @@ L:
 			fmt.Println(err)
 			os.Exit(1)
 		}
-		o.Print()
-		fmt.Println()
+		fmt.Println(o.toString())
 	}
 }
 

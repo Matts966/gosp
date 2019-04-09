@@ -1,12 +1,14 @@
 package types
 
-import "fmt"
+import (
+	"strconv"
+)
 
 // Int type.
 type Int struct {
 	Value int
 }
 
-func (i Int) Print() {
-	fmt.Print(i.Value)
+func (i Int) toString() string {
+	return strconv.Itoa(i.Value)
 }

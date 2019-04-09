@@ -8,15 +8,15 @@ type Env struct {
 	up   *Env
 }
 
-func (e Env) Print() {
-	fmt.Print("Env: ")
+func (e Env) toString() string {
+	s := "Env: "
 	for {
 		if nil == e.vars {
-			return
+			return s
 		}
-		(*(e.vars)).Print()
+		s += (*(e.vars)).toString()
 		if nil == e.up {
-			return
+			return s
 		}
 		e = *e.up
 	}

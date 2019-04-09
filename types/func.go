@@ -4,7 +4,7 @@ import "fmt"
 
 type Func interface {
 	Apply(*Env, *Cell) (Obj, error)
-	Print()
+	toString() string
 }
 
 type UserFunc struct {
@@ -17,12 +17,12 @@ func isList(obj Obj) bool {
 	return obj == nil || ok
 }
 
-func (uf UserFunc) Print() {
-	fmt.Print("<function>")
+func (uf UserFunc) toString() string {
+	return "<function>"
 }
 
-func (p Prim) Print() {
-	fmt.Print("<primitive>")
+func (p Prim) toString() string {
+	return "<primitive>"
 }
 
 func (f UserFunc) Apply(env *Env, args *Cell) (Obj, error) {

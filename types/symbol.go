@@ -1,7 +1,5 @@
 package types
 
-import "fmt"
-
 // Symbols runes
 const Symbols string = "~!@#$%^&*-_=+:/?<>"
 
@@ -10,6 +8,6 @@ type Symbol struct {
 	Name string
 }
 
-func (s Symbol) Print() {
-	fmt.Print(s.Name)
+func (s Symbol) toString() string {
+	return s.Name
 }

@@ -1,38 +1,36 @@
 package types
 
-import "fmt"
-
 // Dot type.
 type Dot struct{}
 
-func (d Dot) Print() {
-	fmt.Print(".")
+func (d Dot) toString() string {
+	return "."
 }
 
 // RParen type
 type RParen struct{}
 
-func (r RParen) Print() {
-	fmt.Print(")")
+func (r RParen) toString() string {
+	return ")"
 }
 
 // True type
 type True struct{}
 
-func (r True) Print() {
-	fmt.Print("t")
+func (r True) toString() string {
+	return "t"
 }
 
 // False type
 type False struct{}
 
-func (f False) Print() {
-	fmt.Print("()")
+func (f False) toString() string {
+	return "()"
 }
 
 // Comment type
 type Comment struct{ String string }
 
-func (f Comment) Print() {
-	fmt.Print("")
+func (c Comment) toString() string {
+	return c.String
 }
