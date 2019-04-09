@@ -8,41 +8,33 @@ import (
 	"github.com/Matts966/gosp/types"
 )
 
-// PrimNumeq is primitive function returning the equality of int in form of (eq 3 3 3).
-var PrimNumeq types.Prim = func(env *types.Env, args *types.Cell) (types.Obj, error) {
+// PrimEq is primitive function returning the equality in form of (eq 'a 'b 'c).
+var PrimEq types.Prim = func(env *types.Env, args *types.Cell) (types.Obj, error) {
 	args, err := evaluator.EvalCell(env, *args)
 	if err != nil {
 		return nil, err
 	}
 	argList := *args
-	b := false
-	val := 0
 	for {
 		if nil == argList.Car {
 			break
-		}
-		i, ok := argList.Car.(types.Int)
-		if !ok {
-			return nil, fmt.Errorf("not int values passed to function =")
-		}
-		if !b {
-			val = i.Value
-			b = true
-		} else {
-			if val != i.Value {
-				return types.False{}, nil
-			}
 		}
 
 		if argList.Cdr == nil {
 			break
 		}
 		to, _ := reflect.Indirect(reflect.ValueOf(argList.Cdr)).Interface().(types.Obj)
+
 		switch v := to.(type) {
 		case types.Cell:
+			x := reflect.Indirect(reflect.ValueOf(argList.Car)).Interface()
+			y := reflect.Indirect(reflect.ValueOf(v.Car)).Interface()
+			if x != y {
+				return types.False{}, nil
+			}
 			argList = v
 		default:
-			return nil, fmt.Errorf("malformed =")
+			return nil, fmt.Errorf("malformed eq")
 		}
 	}
 
