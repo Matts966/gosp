@@ -17,4 +17,5 @@ func AddPrims(env *types.Env) {
 	env.AddObj("progn", types.Prim{F: &PrimProgn})
 	env.AddObj("=", types.Prim{F: &PrimNumeq})
 	env.AddObj("eq", types.Prim{F: &PrimEq})
+	env.AddObj("gensym", types.Prim{F: &PrimGensym})
 }
