@@ -30,6 +30,6 @@ var PrimDefine types.PF = func(env *types.Env, args *types.Cell) (types.Obj, err
 	if err != nil {
 		return nil, err
 	}
-	env.AddObj(s.Name, val)
+	env.AddObj(*s.Name, val)
 	return val, nil
 }

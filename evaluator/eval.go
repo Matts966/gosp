@@ -16,18 +16,18 @@ func Eval(env *types.Env, obj types.Obj) (types.Obj, error) {
 	case types.Int:
 		return obj, nil
 	case types.Symbol:
-		bind, err := env.Find(o)
+		bind, err := env.Find(*o.Name)
 		if err != nil {
 			return nil, err
 		}
 		if nil == bind {
-			return nil, fmt.Errorf("undefined symbol: %s", o.Name)
+			return nil, fmt.Errorf("undefined symbol: %s", *o.Name)
 		}
 		switch b := bind.(type) {
-		case types.Cell:
+		case *types.Cell:
 			return b.Cdr, nil
 		default:
-			return nil, fmt.Errorf("unknown type symbol: %s, b: %+v", o.Name, b)
+			return nil, fmt.Errorf("unknown type symbol: %#v, b: %+v", o.Name, b)
 		}
 	case types.Cell:
 		// Function application

@@ -57,8 +57,8 @@ func (c *Cell) Length() (int, error) {
 }
 
 // Cons gets Car, Cdr and return cell pointer.
-func Cons(Car Obj, Cdr Obj) Cell {
-	return Cell{
+func Cons(Car Obj, Cdr Obj) *Cell {
+	return &Cell{
 		Car: Car,
 		Cdr: Cdr,
 	}

@@ -21,5 +21,5 @@ var PrimCar types.PF = func(env *types.Env, args *types.Cell) (types.Obj, error)
 	if cc, ok := cc.(types.Cell); ok {
 		return cc.Car, nil
 	}
-	return nil, fmt.Errorf("not list value was passed to function car")
+	return nil, fmt.Errorf("not list value was passed to function car, value: %#v", args)
 }

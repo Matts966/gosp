@@ -1,6 +1,8 @@
 package types
 
-import "fmt"
+import (
+	"fmt"
+)
 
 // Env type
 type Env struct {
@@ -23,7 +25,7 @@ func (e Env) String() string {
 }
 
 // Find finds symbols from environment and returns its pointer.
-func (e *Env) Find(sym Symbol) (Obj, error) {
+func (e *Env) Find(name string) (Obj, error) {
 	for p := e; p != nil; p = p.up {
 		cell := p.vars
 		for {
@@ -36,12 +38,12 @@ func (e *Env) Find(sym Symbol) (Obj, error) {
 			switch bind := cell.Car.(type) {
 			case nil:
 				break
-			case Cell:
-				bc, ok := bind.Car.(Symbol)
+			case *Cell:
+				bc, ok := bind.Car.(*Symbol)
 				if !ok {
-					return nil, fmt.Errorf("symbol in env is not Symbol")
+					return nil, fmt.Errorf("symbol in env is not pointer to Symbol")
 				}
-				if sym.Name == bc.Name {
+				if name == *bc.Name {
 					return cell.Car, nil
 				}
 			default:
@@ -61,27 +63,26 @@ func (e *Env) Find(sym Symbol) (Obj, error) {
 	return nil, nil
 }
 
-// Find finds symbols from environment and returns its pointer.
-func (e *Env) Set(sym Symbol, obj Obj) (Obj, error) {
+func (e *Env) Set(name string, obj Obj) (Obj, error) {
 	for p := e; p != nil; p = p.up {
 		cell := p.vars
 		for {
 			if nil == cell {
-				return nil, fmt.Errorf("symbol %s not found", sym.Name)
+				return nil, fmt.Errorf("symbol %s not found", name)
 			}
 			if nil == cell.Car {
-				return nil, fmt.Errorf("symbol %s not found", sym.Name)
+				return nil, fmt.Errorf("symbol %s not found", name)
 			}
 			switch bind := cell.Car.(type) {
 			case nil:
 				break
-			case Cell:
-				bc, ok := bind.Car.(Symbol)
+			case *Cell:
+				bc, ok := bind.Car.(*Symbol)
 				if !ok {
-					return nil, fmt.Errorf("symbol in env is not Symbol")
+					return nil, fmt.Errorf("symbol in env should be Symbol")
 				}
-				if sym.Name == bc.Name {
-					cell.Car = Cons(sym, obj)
+				if name == *bc.Name {
+					bind.Cdr = obj
 					return obj, nil
 				}
 			default:
@@ -98,12 +99,12 @@ func (e *Env) Set(sym Symbol, obj Obj) (Obj, error) {
 			}
 		}
 	}
-	return nil, fmt.Errorf("symbol %s not found", sym.Name)
+	return nil, fmt.Errorf("symbol %s not found", name)
 }
 
 func (e *Env) AddObj(name string, obj Obj) {
-	new := Cons(Cons(Symbol{
-		Name: name,
+	new := Cons(Cons(&Symbol{
+		Name: &name,
 	}, obj), e.vars)
-	e.vars = &new
+	e.vars = new
 }

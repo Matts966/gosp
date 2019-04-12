@@ -15,11 +15,11 @@ var PrimCdr types.PF = func(env *types.Env, args *types.Cell) (types.Obj, error)
 		return nil, err
 	}
 	if c == nil {
-		return nil, fmt.Errorf("nil was passed to function car")
+		return nil, fmt.Errorf("nil was passed to function cdr")
 	}
 	cc := reflect.Indirect(reflect.ValueOf(c.Car)).Interface().(types.Obj)
 	if cc, ok := cc.(types.Cell); ok {
 		return cc.Cdr, nil
 	}
-	return nil, fmt.Errorf("not list value was passed to function car")
+	return nil, fmt.Errorf("not list value was passed to function cdr")
 }

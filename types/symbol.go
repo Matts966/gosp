@@ -5,9 +5,9 @@ const Symbols string = "~!@#$%^&*-_=+:/?<>"
 
 // Symbol type
 type Symbol struct {
-	Name string
+	Name *string
 }
 
 func (s Symbol) String() string {
-	return s.Name
+	return *s.Name
 }

@@ -28,8 +28,14 @@ var PrimEq types.PF = func(env *types.Env, cell *types.Cell) (types.Obj, error) 
 			if argList.Car.String() != v.Car.String() {
 				return types.False{}, nil
 			}
-			if f, ok := argList.Car.(types.Func); ok {
-				if !f.Eq(v.Car) {
+			switch ac := argList.Car.(type) {
+			case types.Func:
+				if !ac.Eq(v.Car) {
+					return types.False{}, nil
+				}
+			case types.Symbol, *types.Symbol:
+				fmt.Printf("%#v, %#v\n", ac, v.Car)
+				if ac != v.Car {
 					return types.False{}, nil
 				}
 			}

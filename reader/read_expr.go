@@ -5,6 +5,7 @@ import (
 	"io"
 	"strconv"
 
+	"github.com/Matts966/gosp/prims"
 	"github.com/Matts966/gosp/scanner"
 	"github.com/Matts966/gosp/types"
 )
@@ -28,14 +29,34 @@ func isSymbolRune(r rune) bool {
 	return false
 }
 
-func readQuote(scn *scanner.Scanner) (types.Obj, error) {
-	obj, err := ReadExpr(scn)
-	if err != nil {
-		return nil, fmt.Errorf("failed to read quote")
+func readSymbol(symbolTable *types.Cell, scn *scanner.Scanner) (*types.Symbol, error) {
+
+	n := scn.Peek()
+	name := ""
+	for isDigit(n) || isSymbolRune(n) || '-' == n {
+
+		name += string(scn.Next())
+		n = scn.Peek()
 	}
-	return types.Cons(types.Symbol{
-		Name: "quote",
-	}, types.Cons(obj, nil)), nil
+	obj, err := prims.Intern(symbolTable, name)
+	if err != nil {
+		return nil, fmt.Errorf("intern failed in readSymbol, symbolTable: %#v, name: %s", symbolTable, name)
+	}
+
+	return obj.(*types.Symbol), nil
+}
+
+func readQuote(symbolTable *types.Cell, scn *scanner.Scanner) (types.Obj, error) {
+	cont, err := ReadExpr(symbolTable, scn)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read quote, err: %+v", err)
+	}
+	i, err := prims.Intern(symbolTable, "quote")
+	if err != nil {
+		return nil, err
+	}
+	// is, err := prims.Intern(symbolTable, cont.String())
+	return types.Cons(i, types.Cons(cont, nil)), nil
 }
 
 func readNumber(scn *scanner.Scanner, v int) int {
@@ -45,26 +66,14 @@ func readNumber(scn *scanner.Scanner, v int) int {
 	return v
 }
 
-func readSymbol(scn *scanner.Scanner, c rune) *types.Symbol {
-	n := scn.Peek()
-	name := string(c)
-	for isDigit(n) || isSymbolRune(n) {
-		name += string(scn.Next())
-		n = scn.Peek()
-	}
-	return &types.Symbol{
-		Name: name,
-	}
-}
-
-func readList(scn *scanner.Scanner) (types.Obj, error) {
-	obj, err := ReadExpr(scn)
+func readList(symbolTable *types.Cell, scn *scanner.Scanner) (types.Obj, error) {
+	obj, err := ReadExpr(symbolTable, scn)
 	if err != nil {
 		return obj, err
 	}
 	switch obj.(type) {
 	case nil:
-		obj, err := ReadExpr(scn)
+		obj, err := ReadExpr(symbolTable, scn)
 		if err != nil {
 			return obj, err
 		}
@@ -80,9 +89,9 @@ func readList(scn *scanner.Scanner) (types.Obj, error) {
 	head := types.Cons(obj, nil)
 
 	var tail types.Obj
-	tail = &head
+	tail = head
 	for {
-		obj, err := ReadExpr(scn)
+		obj, err := ReadExpr(symbolTable, scn)
 		if err != nil {
 			return nil, err
 		}
@@ -91,11 +100,11 @@ func readList(scn *scanner.Scanner) (types.Obj, error) {
 			return nil, fmt.Errorf("unclosed parenthesis")
 		case types.Dot:
 			t, _ := tail.(*types.Cell)
-			t.Cdr, err = ReadExpr(scn)
+			t.Cdr, err = ReadExpr(symbolTable, scn)
 			if err != nil {
 				return nil, err
 			}
-			nx, err := ReadExpr(scn)
+			nx, err := ReadExpr(symbolTable, scn)
 			if err != nil {
 				return nil, err
 			}
@@ -108,7 +117,7 @@ func readList(scn *scanner.Scanner) (types.Obj, error) {
 		default:
 			t, _ := tail.(*types.Cell)
 			nc := types.Cons(obj, nil)
-			t.Cdr = &nc
+			t.Cdr = nc
 			tail = t.Cdr
 		}
 	}
@@ -132,37 +141,54 @@ func passLine(scn *scanner.Scanner) (types.Obj, error) {
 	return types.Comment{comment}, nil
 }
 
-func ReadExpr(scn *scanner.Scanner) (types.Obj, error) {
-	c := scn.Next()
-	for c != scanner.EOF {
-		switch c {
+func ReadExpr(symbolTable *types.Cell, scn *scanner.Scanner) (types.Obj, error) {
+	p := scn.Peek()
+	for p != scanner.EOF {
+		switch p {
 		case ' ', '\n', '\r', '\t':
+			scn.Next()
 		case '(':
-			return readList(scn)
+			scn.Next()
+			return readList(symbolTable, scn)
 		case ')':
+			scn.Next()
 			return types.RParen{}, nil
 		case '.':
+			scn.Next()
 			return types.Dot{}, nil
 		case '\'':
-			return readQuote(scn)
+			scn.Next()
+			return readQuote(symbolTable, scn)
 		case ';':
+			scn.Next()
 			return passLine(scn)
 		case '-':
+
+			scn.Next()
+
 			if isDigit(scn.Peek()) {
+
 				return types.Int{
 					Value: -readNumber(scn, int(scn.Next()-'0')),
 				}, nil
 			}
-			fallthrough
+
+			// Can not use scn.Back() for used scn.Peek() already.
+			return prims.Intern(symbolTable, "-")
+
 		default:
-			if isDigit(c) {
+			if isDigit(p) {
+
+				scn.Next()
+
 				return types.Int{
-					Value: readNumber(scn, int(c-'0')),
+					Value: readNumber(scn, int(p-'0')),
 				}, nil
 			}
-			return readSymbol(scn, c), nil
+
+			return readSymbol(symbolTable, scn)
 		}
-		c = scn.Next()
+		p = scn.Peek()
 	}
 	return nil, io.EOF
 }

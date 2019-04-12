@@ -10,7 +10,7 @@ import (
 
 var scn scanner.Scanner
 
-const str string = `abcdefghijklmnopqrstuvwxyz `
+const str string = "abcdefghijklmnopqrstuvwxyz-1234567890 \r\n\n"
 
 func TestPeek(t *testing.T) {
 	scn.Init(strings.NewReader(str))
@@ -58,6 +58,26 @@ func TestEOFUsingFile(t *testing.T) {
 			break
 		} else {
 			t.Logf("%v", scn.Next())
+		}
+	}
+}
+
+func TestBack(t *testing.T) {
+	scn.Init(strings.NewReader(str))
+	for {
+		if scanner.EOF == scn.Peek() {
+			scn.Next()
+			scn.Back()
+			if scanner.EOF != scn.Peek() {
+				t.Fatal("Failed to back properly.")
+			}
+			break
+		} else {
+			n := scn.Next()
+			scn.Back()
+			if scn.Next() != n {
+				t.Fatal("Failed to back properly.")
+			}
 		}
 	}
 }

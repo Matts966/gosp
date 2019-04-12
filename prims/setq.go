@@ -22,5 +22,5 @@ var PrimSetq types.PF = func(env *types.Env, args *types.Cell) (types.Obj, error
 		return nil, fmt.Errorf("cannot setq value to other than symbol")
 	}
 	val := reflect.Indirect(reflect.ValueOf(args.Cdr)).Interface().(types.Cell).Car
-	return env.Set(sym, val)
+	return env.Set(*sym.Name, val)
 }

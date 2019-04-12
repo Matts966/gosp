@@ -39,3 +39,7 @@ func (s *Scanner) Next() rune {
 	}
 	return r
 }
+
+func (s *Scanner) Back() {
+	s.reader.UnreadRune()
+}

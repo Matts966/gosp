@@ -13,13 +13,27 @@ import (
 	"github.com/Matts966/gosp/types"
 )
 
+const (
+	prompt = "gosp~> "
+	ext    = ".gosp"
+)
+
 var (
-	scn scanner.Scanner
-	env types.Env = types.Env{}
+	st          = "symbol_table"
+	scn         scanner.Scanner
+	env         types.Env = types.Env{}
+	symbolTable *types.Cell
 )
 
 func init() {
 	scn.Init(os.Stdin)
+	env.AddObj(st, nil)
+	s, err := env.Find(st)
+	if err != nil {
+		panic(err)
+	}
+	ss := s.(*types.Cell)
+	symbolTable = ss
 	prims.AddPrims(&env)
 }
 
@@ -27,7 +41,7 @@ func repl(prompt string) {
 L:
 	for {
 		fmt.Print(prompt)
-		obj, err := reader.ReadExpr(&scn)
+		obj, err := reader.ReadExpr(symbolTable, &scn)
 		if err == io.EOF {
 			os.Exit(0)
 		}
@@ -62,7 +76,7 @@ L:
 
 func main() {
 	if len(os.Args) < 2 {
-		repl("gosp~> ")
+		repl(prompt)
 	} else if "test" == os.Args[1] {
 		repl("")
 	}
@@ -70,7 +84,7 @@ func main() {
 		if 0 == i {
 			continue
 		}
-		if strings.HasSuffix(fp, ".gosp") {
+		if strings.HasSuffix(fp, ext) {
 			f, err := os.Open(fp)
 			if err != nil {
 				panic(err)
