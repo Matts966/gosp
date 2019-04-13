@@ -6,7 +6,7 @@ import (
 	"strconv"
 
 	"github.com/Matts966/gosp/prims"
-	"github.com/Matts966/gosp/scanner"
+	"github.com/Matts966/gosp/repl/scanner"
 	"github.com/Matts966/gosp/types"
 )
 

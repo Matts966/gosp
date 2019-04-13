@@ -1,21 +1,15 @@
-package main
+package repl
 
 import (
 	"fmt"
 	"io"
 	"os"
-	"strings"
 
-	"github.com/Matts966/gosp/evaluator"
 	"github.com/Matts966/gosp/prims"
-	"github.com/Matts966/gosp/reader"
-	"github.com/Matts966/gosp/scanner"
+	"github.com/Matts966/gosp/repl/evaluator"
+	"github.com/Matts966/gosp/repl/reader"
+	"github.com/Matts966/gosp/repl/scanner"
 	"github.com/Matts966/gosp/types"
-)
-
-const (
-	prompt = "gosp~> "
-	ext    = ".gosp"
 )
 
 var (
@@ -25,8 +19,19 @@ var (
 	symbolTable *types.Cell
 )
 
-func init() {
-	scn.Init(os.Stdin)
+type repl struct {
+	prompt      string
+	scn         scanner.Scanner
+	env         types.Env
+	symbolTable *types.Cell
+}
+
+type Runnable interface {
+	Run()
+}
+
+func New(r io.Reader, prompt string) Runnable {
+	scn.Init(r)
 	env.AddObj(st, nil)
 	s, err := env.Find(st)
 	if err != nil {
@@ -35,13 +40,19 @@ func init() {
 	ss := s.(*types.Cell)
 	symbolTable = ss
 	prims.AddPrims(&env)
+	return &repl{
+		prompt:      prompt,
+		scn:         scn,
+		env:         env,
+		symbolTable: symbolTable,
+	}
 }
 
-func repl(prompt string) {
+func (r *repl) Run() {
 L:
 	for {
-		fmt.Print(prompt)
-		obj, err := reader.ReadExpr(symbolTable, &scn)
+		fmt.Print(r.prompt)
+		obj, err := reader.ReadExpr(r.symbolTable, &r.scn)
 		if err == io.EOF {
 			os.Exit(0)
 		}
@@ -65,32 +76,11 @@ L:
 			continue L
 		}
 
-		o, err := evaluator.Eval(&env, obj)
+		o, err := evaluator.Eval(&r.env, obj)
 		if nil != err {
 			fmt.Println(err)
 			os.Exit(1)
 		}
 		fmt.Println(o.String())
-	}
-}
-
-func main() {
-	if len(os.Args) < 2 {
-		repl(prompt)
-	} else if "test" == os.Args[1] {
-		repl("")
-	}
-	for i, fp := range os.Args {
-		if 0 == i {
-			continue
-		}
-		if strings.HasSuffix(fp, ext) {
-			f, err := os.Open(fp)
-			if err != nil {
-				panic(err)
-			}
-			scn.Init(f)
-			repl("")
-		}
 	}
 }

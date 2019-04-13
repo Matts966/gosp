@@ -1,7 +1,7 @@
 package prims
 
 import (
-	"github.com/Matts966/gosp/evaluator"
+	"github.com/Matts966/gosp/repl/evaluator"
 	"github.com/Matts966/gosp/types"
 )
 

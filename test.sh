@@ -7,13 +7,13 @@ function fail() {
 }
 
 function do_run() {
-  error=$(echo "$3" | ./gosp test 2>&1 > /dev/null)
+  error=$(echo "$3" | gosp test 2>&1 > /dev/null)
   if [ -n "$error" ]; then
     echo FAILED
     fail "$error"
   fi
 
-  result=$(echo "$3" | ./gosp test 2> /dev/null | tail -1)
+  result=$(echo "$3" | gosp test 2> /dev/null | tail -1)
   if [ "$result" != "$2" ]; then
     echo FAILED
     fail "$2 expected, but got $result"
