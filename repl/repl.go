@@ -3,7 +3,6 @@ package repl
 import (
 	"fmt"
 	"io"
-	"os"
 
 	"github.com/Matts966/gosp/prims"
 	"github.com/Matts966/gosp/repl/evaluator"
@@ -27,7 +26,7 @@ type repl struct {
 }
 
 type Runnable interface {
-	Run()
+	Run() (types.Obj, error)
 }
 
 func New(r io.Reader, prompt string) Runnable {
@@ -48,29 +47,26 @@ func New(r io.Reader, prompt string) Runnable {
 	}
 }
 
-func (r *repl) Run() {
+func (r *repl) Run() (types.Obj, error) {
+	var lastObj types.Obj
 L:
 	for {
 		fmt.Print(r.prompt)
 		obj, err := reader.ReadExpr(r.symbolTable, &r.scn)
 		if err == io.EOF {
-			os.Exit(0)
+			return lastObj, nil
 		}
 		if err != nil {
-			fmt.Println(err)
-			os.Exit(1)
+			return nil, err
 		}
 
 		switch obj.(type) {
 		case nil:
-			fmt.Println(fmt.Errorf("reading expression returns nil"))
-			os.Exit(1)
+			return nil, fmt.Errorf("reading expression returns nil")
 		case types.Dot:
-			fmt.Println(fmt.Errorf("stray dot"))
-			os.Exit(1)
+			return nil, fmt.Errorf("stray dot")
 		case types.RParen:
-			fmt.Println(fmt.Errorf("unmatched right parenthesis"))
-			os.Exit(1)
+			return nil, fmt.Errorf("unmatched right parenthesis")
 		// Do not return any
 		case types.Comment:
 			continue L
@@ -78,9 +74,9 @@ L:
 
 		o, err := evaluator.Eval(&r.env, obj)
 		if nil != err {
-			fmt.Println(err)
-			os.Exit(1)
+			return nil, err
 		}
 		fmt.Println(o.String())
+		lastObj = o
 	}
 }

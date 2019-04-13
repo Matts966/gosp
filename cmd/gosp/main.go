@@ -39,5 +39,8 @@ func init() {
 }
 
 func main() {
-	r.Run()
+	_, err := r.Run()
+	if err != nil {
+		panic(err)
+	}
 }

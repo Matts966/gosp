@@ -15,5 +15,5 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(obj.String())
+	fmt.Println("returned:", obj.String())
 }

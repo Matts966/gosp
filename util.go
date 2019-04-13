@@ -19,7 +19,7 @@ func init() {
 
 }
 
-func Interpret(lispStr string) {
+func Interpret(lispStr string) (types.Obj, error) {
 	r := repl.New(strings.NewReader(lispStr), "")
-	r.Run()
+	return r.Run()
 }
