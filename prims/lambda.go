@@ -7,7 +7,7 @@ import (
 	"github.com/Matts966/gosp/types"
 )
 
-// PrimLambda returns UserFuncs.
+// PrimLambda returns UserFuncss.
 var PrimLambda types.PF = func(env *types.Env, args *types.Cell) (types.Obj, error) {
 	argList := *args
 	l, err := argList.Length()
@@ -28,7 +28,7 @@ var PrimLambda types.PF = func(env *types.Env, args *types.Cell) (types.Obj, err
 	if !ok {
 		return nil, fmt.Errorf("the body of lambda is not list")
 	}
-	return &types.UserFunc{
+	return &types.UserFuncs{
 		Params: args.Car,
 		Body:   args.Cdr,
 		Env:    *env,

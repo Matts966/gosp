@@ -7,36 +7,28 @@ type Func interface {
 	Eq(Obj) bool
 }
 
-type UserFunc struct {
+type UserFuncs struct {
 	Params Obj
 	Body   Obj
 	Env    Env
 }
 
-func isList(obj Obj) bool {
-	_, ok := obj.(Cell)
-	return obj == nil || ok
-}
-
-func (uf UserFunc) String() string {
+func (uf UserFuncs) String() string {
 	return "<function>"
 }
 
-func (uf UserFunc) Eq(o Obj) bool {
+func (uf UserFuncs) Eq(o Obj) bool {
 	switch u := o.(type) {
-	case UserFunc:
+	case UserFuncs:
 		return uf.Params == u.Params && uf.Body == u.Body && uf.Env == u.Env
-	case *UserFunc:
+	case *UserFuncs:
 		return uf.Params == u.Params && uf.Body == u.Body && uf.Env == u.Env
 	default:
 		return false
 	}
 }
 
-func (f UserFunc) Apply(env *Env, args *Cell) (Obj, error) {
-	if !isList(args) {
-		return nil, fmt.Errorf("argument must be a list")
-	}
+func (f UserFuncs) Apply(env *Env, args *Cell) (Obj, error) {
 	return nil, fmt.Errorf("not implemented")
 }
 

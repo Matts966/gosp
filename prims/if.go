@@ -34,6 +34,6 @@ var PrimIf types.PF = func(env *types.Env, args *types.Cell) (types.Obj, error) 
 	if elsc, ok := reflect.Indirect(reflect.ValueOf(els)).Interface().(types.Cell); !ok {
 		return nil, fmt.Errorf("dotted list was passed to primitive function if")
 	} else {
-		return Progn(env, &elsc)
+		return evaluator.Progn(env, &elsc)
 	}
 }
