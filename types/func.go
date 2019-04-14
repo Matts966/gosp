@@ -42,21 +42,21 @@ func (f UserFunc) Apply(env *Env, args *Cell) (Obj, error) {
 
 type PF func(env *Env, args *Cell) (Obj, error)
 
-type Prim struct {
+type PrimFuncs struct {
 	F *PF
 }
 
-func (p Prim) String() string {
+func (p PrimFuncs) String() string {
 	return "<primitive>"
 }
 
-func (p Prim) Eq(o Obj) bool {
-	if pr, ok := o.(Prim); ok {
+func (p PrimFuncs) Eq(o Obj) bool {
+	if pr, ok := o.(PrimFuncs); ok {
 		return p.F == pr.F
 	}
 	return false
 }
 
-func (p Prim) Apply(env *Env, args *Cell) (Obj, error) {
+func (p PrimFuncs) Apply(env *Env, args *Cell) (Obj, error) {
 	return (*p.F)(env, args)
 }
