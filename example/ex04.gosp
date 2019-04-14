@@ -1,0 +1,6 @@
+(define tree '((a (b)) c(d)))
+(define tree2 '((w x) (y z)))
+
+(defun loop (tree) (cons (print tree) (loop tree2)))
+
+(loop tree)

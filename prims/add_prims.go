@@ -22,6 +22,7 @@ var nameToPrims map[string]types.Obj = map[string]types.Obj{
 	"intern": types.PrimFuncs{F: &PrimIntern},
 	"lambda": types.PrimFuncs{F: &PrimLambda},
 	"defun":  types.PrimFuncs{F: &PrimDefun},
+	"print":  types.PrimFuncs{F: &PrimPrint},
 }
 
 func AddPrims(env *types.Env) {
