@@ -2,7 +2,8 @@ package prims
 
 import "github.com/Matts966/gosp/types"
 
-var nameToFunc map[string]types.Prim = map[string]types.Prim{
+var nameToPrims map[string]types.Obj = map[string]types.Obj{
+	"t":      types.True{},
 	"quote":  types.Prim{F: &PrimQuote},
 	"+":      types.Prim{F: &PrimPlus},
 	"-":      types.Prim{F: &PrimMinus},
@@ -26,7 +27,7 @@ func AddPrims(env *types.Env) {
 	if err != nil {
 		panic(err)
 	}
-	for n, f := range nameToFunc {
+	for n, f := range nameToPrims {
 		Intern(st.(*types.Cell), n)
 		env.AddObj(n, f)
 	}
