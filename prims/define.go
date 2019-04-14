@@ -15,7 +15,7 @@ var PrimDefine types.PF = func(env *types.Env, args *types.Cell) (types.Obj, err
 		return nil, err
 	}
 	if l != 2 {
-		return nil, fmt.Errorf("invalid number of args passed to PrimCons")
+		return nil, fmt.Errorf("invalid number of args passed to PrimDefine")
 	}
 
 	s, ok := reflect.Indirect(reflect.ValueOf(args.Car)).Interface().(types.Symbol)

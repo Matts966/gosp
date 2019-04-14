@@ -40,15 +40,19 @@ func apply(f types.Func, env *types.Env, args *types.Cell) (types.Obj, error) {
 		} else {
 			ne.Set(p.Car.String(), eargs.Car)
 		}
+
 		ec, ok := eargs.Cdr.(*types.Cell)
-		if !ok && nil != ec {
+		if !ok && eargs.Cdr != nil {
 			return nil, fmt.Errorf("cell was not list while reading eargs: %#v", eargs)
 		}
 		eargs = ec
-		p, ok2 := p.Cdr.(*types.Cell)
-		if !ok && nil != p {
+
+		p2, ok2 := p.Cdr.(*types.Cell)
+		if !ok2 && p.Cdr != nil {
 			return nil, fmt.Errorf("cell was not list while reading params, p: %#v", p)
 		}
+		p = p2
+
 		if ok != ok2 {
 			return nil, fmt.Errorf("number of argument does not match")
 		}
