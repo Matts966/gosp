@@ -15,10 +15,6 @@ var (
 	symbolTable *types.Cell
 )
 
-func init() {
-
-}
-
 func Interpret(lispStr string) (types.Obj, error) {
 	r := repl.New(strings.NewReader(lispStr), "")
 	return r.Run()

@@ -8,9 +8,9 @@ type Func interface {
 }
 
 type UserFunc struct {
-	params Obj
-	body   Obj
-	env    Obj
+	Params Obj
+	Body   Obj
+	Env    Env
 }
 
 func isList(obj Obj) bool {
@@ -25,9 +25,9 @@ func (uf UserFunc) String() string {
 func (uf UserFunc) Eq(o Obj) bool {
 	switch u := o.(type) {
 	case UserFunc:
-		return uf.params == u.params && uf.body == u.body && uf.env == u.env
+		return uf.Params == u.Params && uf.Body == u.Body && uf.Env == u.Env
 	case *UserFunc:
-		return uf.params == u.params && uf.body == u.body && uf.env == u.env
+		return uf.Params == u.Params && uf.Body == u.Body && uf.Env == u.Env
 	default:
 		return false
 	}
