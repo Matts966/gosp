@@ -22,7 +22,7 @@ var PrimPlus types.PF = func(env *types.Env, args *types.Cell) (types.Obj, error
 		}
 		i, ok := argList.Car.(types.Int)
 		if !ok {
-			return nil, fmt.Errorf("not int values passed to function plus")
+			return nil, fmt.Errorf("not int values passed to function plus, value: %#v", argList.Car)
 		}
 		val += i.Value
 		if argList.Cdr == nil {

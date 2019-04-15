@@ -33,13 +33,15 @@ func apply(f types.Func, env *types.Env, args *types.Cell) (types.Obj, error) {
 	if !ok {
 		return nil, fmt.Errorf("params of user function was not pointer to cell")
 	}
+
+	// Map for new env
+	var m *types.Cell
 	for eargs != nil {
-		found, err := ne.Find(p.Car.String())
-		if err != nil || nil == found {
-			ne.AddObj(p.Car.String(), eargs.Car)
-		} else {
-			ne.Set(p.Car.String(), eargs.Car)
+		s, ok := p.Car.(*types.Symbol)
+		if !ok {
+			return nil, fmt.Errorf("not symbol parameter")
 		}
+		m = types.Cons(types.Cons(s, eargs.Car), m)
 
 		ec, ok := eargs.Cdr.(*types.Cell)
 		if !ok && eargs.Cdr != nil {
@@ -49,7 +51,13 @@ func apply(f types.Func, env *types.Env, args *types.Cell) (types.Obj, error) {
 
 		p2, ok2 := p.Cdr.(*types.Cell)
 		if !ok2 && p.Cdr != nil {
-			return nil, fmt.Errorf("cell was not list while reading params, p: %#v", p)
+			// Implement variadic function.
+			s, ok := p.Cdr.(*types.Symbol)
+			if !ok {
+				return nil, fmt.Errorf("cell was not list or last symbol while reading params, p: %#v", p)
+			}
+			m = types.Cons(types.Cons(s, eargs), m)
+			break
 		}
 		p = p2
 
@@ -57,5 +65,7 @@ func apply(f types.Func, env *types.Env, args *types.Cell) (types.Obj, error) {
 			return nil, fmt.Errorf("number of argument does not match")
 		}
 	}
+	ne.AddScope(m)
+
 	return Progn(&ne, &b)
 }

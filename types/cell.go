@@ -19,10 +19,11 @@ L:
 			break L
 		}
 		s += c.Car.String()
-		if c.Cdr == nil {
+		cv := reflect.Indirect(reflect.ValueOf(c.Cdr))
+		if !cv.IsValid() {
 			break
 		}
-		to, _ := reflect.Indirect(reflect.ValueOf(c.Cdr)).Interface().(Obj)
+		to, _ := cv.Interface().(Obj)
 		switch v := to.(type) {
 		case False:
 			break L

@@ -29,7 +29,7 @@ func (uf UserFuncs) Eq(o Obj) bool {
 }
 
 func (f UserFuncs) Apply(env *Env, args *Cell) (Obj, error) {
-	return nil, fmt.Errorf("not implemented")
+	return nil, fmt.Errorf("the application of UserFuncs not implemented by method for not causing import cycle")
 }
 
 type PF func(env *Env, args *Cell) (Obj, error)

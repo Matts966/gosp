@@ -16,7 +16,7 @@ func (e Env) String() string {
 		if nil == e.vars {
 			return s
 		}
-		s += (*(e.vars)).String()
+		s += e.vars.String()
 		if nil == e.up {
 			return s
 		}
@@ -30,10 +30,10 @@ func (e *Env) Find(name string) (Obj, error) {
 		cell := p.vars
 		for {
 			if nil == cell {
-				return nil, nil
+				break
 			}
 			if nil == cell.Car {
-				return nil, nil
+				break
 			}
 			switch bind := cell.Car.(type) {
 			case nil:
@@ -49,7 +49,6 @@ func (e *Env) Find(name string) (Obj, error) {
 			default:
 				return nil, fmt.Errorf("unknown bind type, bind: %#v", bind)
 			}
-
 			switch next := cell.Cdr.(type) {
 			case nil:
 				break
@@ -107,4 +106,12 @@ func (e *Env) AddObj(name string, obj Obj) {
 		Name: &name,
 	}, obj), e.vars)
 	e.vars = new
+}
+
+func (e *Env) AddScope(m *Cell) {
+	ce := *e
+	*e = Env{
+		vars: m,
+		up:   &ce,
+	}
 }
