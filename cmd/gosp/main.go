@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"strings"
 
@@ -28,19 +29,19 @@ func init() {
 		if strings.HasSuffix(fp, ext) {
 			f, err := os.Open(fp)
 			if err != nil {
-				panic(err)
+				fmt.Printf("%+v\n", err)
 			}
 			r = repl.New(f, "")
 		}
 	}
 	if nil == r {
-		panic(xerrors.New("file not found"))
+		fmt.Printf("%+v\n", xerrors.New("file not found"))
 	}
 }
 
 func main() {
 	_, err := r.Run()
 	if err != nil {
-		panic(err)
+		fmt.Printf("%+v\n", err)
 	}
 }

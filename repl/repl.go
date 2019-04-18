@@ -35,7 +35,7 @@ func New(r io.Reader, prompt string) Runnable {
 	env.AddObj(st, nil)
 	s, err := env.Find(st)
 	if err != nil {
-		panic(err)
+		fmt.Printf("%+v\n", err)
 	}
 	ss := s.(*types.Cell)
 	symbolTable = ss
