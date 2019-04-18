@@ -1,13 +1,13 @@
 package reader
 
 import (
-	"fmt"
 	"io"
 	"strconv"
 
 	"github.com/Matts966/gosp/prims"
 	"github.com/Matts966/gosp/repl/scanner"
 	"github.com/Matts966/gosp/types"
+	"golang.org/x/xerrors"
 )
 
 func isDigit(r rune) bool {
@@ -40,7 +40,7 @@ func readSymbol(symbolTable *types.Cell, scn *scanner.Scanner) (*types.Symbol, e
 	}
 	obj, err := prims.Intern(symbolTable, name)
 	if err != nil {
-		return nil, fmt.Errorf("intern failed in readSymbol, symbolTable: %#v, name: %s", symbolTable, name)
+		return nil, xerrors.Errorf("intern failed in readSymbol, symbolTable: %#v, name: %s", symbolTable, name)
 	}
 
 	return obj.(*types.Symbol), nil
@@ -49,11 +49,11 @@ func readSymbol(symbolTable *types.Cell, scn *scanner.Scanner) (*types.Symbol, e
 func readQuote(symbolTable *types.Cell, scn *scanner.Scanner) (types.Obj, error) {
 	cont, err := ReadExpr(symbolTable, scn)
 	if err != nil {
-		return nil, fmt.Errorf("failed to read quote, err: %+v", err)
+		return nil, xerrors.Errorf("failed to read quote, err: %+v", err)
 	}
 	i, err := prims.Intern(symbolTable, "quote")
 	if err != nil {
-		return nil, err
+		return nil, xerrors.Errorf("interning \"quote\" failed in readQuote caused error: %w", err)
 	}
 	// is, err := prims.Intern(symbolTable, cont.String())
 	return types.Cons(i, types.Cons(cont, nil)), nil
@@ -69,20 +69,20 @@ func readNumber(scn *scanner.Scanner, v int) int {
 func readList(symbolTable *types.Cell, scn *scanner.Scanner) (types.Obj, error) {
 	obj, err := ReadExpr(symbolTable, scn)
 	if err != nil {
-		return obj, err
+		return obj, xerrors.Errorf("error occured while ReadExpr in readList symbolTable=%#v : %w", symbolTable, err)
 	}
 	switch obj.(type) {
 	case nil:
 		obj, err := ReadExpr(symbolTable, scn)
 		if err != nil {
-			return obj, err
+			return obj, xerrors.Errorf("error occured while 2nd ReadExpr in readList, symbolTable=%#v : %w", symbolTable, err)
 		}
 		if _, ok := obj.(types.RParen); ok {
 			return types.Cell{}, nil
 		}
-		return nil, fmt.Errorf("unclosed parenthesis")
+		return nil, xerrors.New("unclosed parenthesis")
 	case types.Dot:
-		return nil, fmt.Errorf("stray dot")
+		return nil, xerrors.New("stray dot")
 	case types.RParen:
 		return types.False{}, nil
 	}
@@ -93,23 +93,23 @@ func readList(symbolTable *types.Cell, scn *scanner.Scanner) (types.Obj, error) 
 	for {
 		obj, err := ReadExpr(symbolTable, scn)
 		if err != nil {
-			return nil, err
+			return nil, xerrors.Errorf("error occured while 3rd ReadExpr in readList symbolTable=%#v : %w", symbolTable, err)
 		}
 		switch obj.(type) {
 		case nil:
-			return nil, fmt.Errorf("unclosed parenthesis")
+			return nil, xerrors.New("unclosed parenthesis")
 		case types.Dot:
 			t, _ := tail.(*types.Cell)
 			t.Cdr, err = ReadExpr(symbolTable, scn)
 			if err != nil {
-				return nil, err
+				return nil, xerrors.Errorf("error occured while ReadExpr for dotted list in readList symbolTable=%#v : %w", symbolTable, err)
 			}
 			nx, err := ReadExpr(symbolTable, scn)
 			if err != nil {
-				return nil, err
+				return nil, xerrors.Errorf("error occured while 2nd ReadExpr for dotted list in readList symbolTable=%#v : %w", symbolTable, err)
 			}
 			if _, ok := nx.(types.RParen); !ok {
-				return nil, fmt.Errorf("closed parenthesis expected after dot")
+				return nil, xerrors.New("closed parenthesis expected after dot")
 			}
 			return head, nil
 		case types.RParen:

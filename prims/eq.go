@@ -6,13 +6,14 @@ import (
 
 	"github.com/Matts966/gosp/repl/evaluator"
 	"github.com/Matts966/gosp/types"
+	"golang.org/x/xerrors"
 )
 
 // PrimEq is primitive function returning the equality in form of (eq 'a 'b 'c).
 var PrimEq types.PF = func(env *types.Env, cell *types.Cell) (types.Obj, error) {
 	args, err := evaluator.EvalCell(env, *cell)
 	if err != nil {
-		return nil, err
+		return nil, xerrors.Errorf("evaluating args in eq caused error: %w", err)
 	}
 	argList := *args
 	for {
@@ -41,7 +42,7 @@ var PrimEq types.PF = func(env *types.Env, cell *types.Cell) (types.Obj, error) 
 			}
 			argList = v
 		default:
-			return nil, fmt.Errorf("malformed eq")
+			return nil, xerrors.New("malformed eq")
 		}
 	}
 

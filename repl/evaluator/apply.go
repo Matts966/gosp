@@ -1,10 +1,10 @@
 package evaluator
 
 import (
-	"fmt"
 	"reflect"
 
 	"github.com/Matts966/gosp/types"
+	"golang.org/x/xerrors"
 )
 
 func apply(f types.Func, env *types.Env, args *types.Cell) (types.Obj, error) {
@@ -15,7 +15,7 @@ func apply(f types.Func, env *types.Env, args *types.Cell) (types.Obj, error) {
 
 	uf, ok := f.(types.UserFuncs)
 	if !ok {
-		return nil, fmt.Errorf("not supported")
+		return nil, xerrors.New("not supported")
 	}
 	ne := uf.Env
 	if nil == uf.Body {
@@ -27,11 +27,11 @@ func apply(f types.Func, env *types.Env, args *types.Cell) (types.Obj, error) {
 	}
 	eargs, err := EvalCell(env, *args)
 	if err != nil {
-		return nil, err
+		return nil, xerrors.Errorf("evaluating args in apply caused error: %w", err)
 	}
 	p, ok := uf.Params.(*types.Cell)
 	if !ok {
-		return nil, fmt.Errorf("params of user function was not pointer to cell")
+		return nil, xerrors.New("params of user function was not pointer to cell")
 	}
 
 	// Map for new env
@@ -39,13 +39,13 @@ func apply(f types.Func, env *types.Env, args *types.Cell) (types.Obj, error) {
 	for eargs != nil {
 		s, ok := p.Car.(*types.Symbol)
 		if !ok {
-			return nil, fmt.Errorf("not symbol parameter")
+			return nil, xerrors.New("not symbol parameter")
 		}
 		m = types.Cons(types.Cons(s, eargs.Car), m)
 
 		ec, ok := eargs.Cdr.(*types.Cell)
 		if !ok && eargs.Cdr != nil {
-			return nil, fmt.Errorf("cell was not list while reading eargs: %#v", eargs)
+			return nil, xerrors.Errorf("cell was not list while reading eargs: %#v", eargs)
 		}
 		eargs = ec
 
@@ -54,7 +54,7 @@ func apply(f types.Func, env *types.Env, args *types.Cell) (types.Obj, error) {
 			// Implement variadic function.
 			s, ok := p.Cdr.(*types.Symbol)
 			if !ok {
-				return nil, fmt.Errorf("cell was not list or last symbol while reading params, p: %#v", p)
+				return nil, xerrors.Errorf("cell was not list or last symbol while reading params, p: %#v", p)
 			}
 			m = types.Cons(types.Cons(s, eargs), m)
 			break
@@ -62,7 +62,7 @@ func apply(f types.Func, env *types.Env, args *types.Cell) (types.Obj, error) {
 		p = p2
 
 		if ok != ok2 {
-			return nil, fmt.Errorf("number of argument does not match")
+			return nil, xerrors.New("number of argument does not match")
 		}
 	}
 	ne.AddScope(m)

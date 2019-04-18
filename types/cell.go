@@ -1,8 +1,9 @@
 package types
 
 import (
-	"fmt"
 	"reflect"
+
+	"golang.org/x/xerrors"
 )
 
 // Cell type.
@@ -52,7 +53,7 @@ func (c *Cell) Length() (int, error) {
 			cp = &c
 			len++
 		default:
-			return 0, fmt.Errorf("cannot handle dotted list")
+			return 0, xerrors.New("cannot handle dotted list")
 		}
 	}
 }

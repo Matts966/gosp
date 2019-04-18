@@ -1,18 +1,18 @@
 package prims
 
 import (
-	"fmt"
 	"reflect"
 
 	"github.com/Matts966/gosp/repl/evaluator"
 	"github.com/Matts966/gosp/types"
+	"golang.org/x/xerrors"
 )
 
 // PrimPlus is primitive function returning the sum of list.
 var PrimPlus types.PF = func(env *types.Env, args *types.Cell) (types.Obj, error) {
 	args, err := evaluator.EvalCell(env, *args)
 	if err != nil {
-		return nil, err
+		return nil, xerrors.Errorf("evaluating function in plus(+) caused error: %w", err)
 	}
 	argList := *args
 	val := 0
@@ -22,7 +22,7 @@ var PrimPlus types.PF = func(env *types.Env, args *types.Cell) (types.Obj, error
 		}
 		i, ok := argList.Car.(types.Int)
 		if !ok {
-			return nil, fmt.Errorf("not int values passed to function plus, value: %#v", argList.Car)
+			return nil, xerrors.Errorf("not int values passed to function plus, value: %#v", argList.Car)
 		}
 		val += i.Value
 		if argList.Cdr == nil {
@@ -33,7 +33,7 @@ var PrimPlus types.PF = func(env *types.Env, args *types.Cell) (types.Obj, error
 		case types.Cell:
 			argList = v
 		default:
-			return nil, fmt.Errorf("malformed plus")
+			return nil, xerrors.New("malformed plus")
 		}
 	}
 

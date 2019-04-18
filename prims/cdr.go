@@ -1,25 +1,25 @@
 package prims
 
 import (
-	"fmt"
 	"reflect"
 
 	"github.com/Matts966/gosp/repl/evaluator"
 	"github.com/Matts966/gosp/types"
+	"golang.org/x/xerrors"
 )
 
 // PrimCdr is primitive function in form of (cdr ~).
 var PrimCdr types.PF = func(env *types.Env, args *types.Cell) (types.Obj, error) {
 	c, err := evaluator.EvalCell(env, *args)
 	if err != nil {
-		return nil, err
+		return nil, xerrors.Errorf("evaluating args in cdr caused error: %w", err)
 	}
 	if c == nil {
-		return nil, fmt.Errorf("nil was passed to function cdr")
+		return nil, xerrors.New("nil was passed to function cdr")
 	}
 	cc := reflect.Indirect(reflect.ValueOf(c.Car)).Interface().(types.Obj)
 	if cc, ok := cc.(types.Cell); ok {
 		return cc.Cdr, nil
 	}
-	return nil, fmt.Errorf("not list value was passed to function cdr")
+	return nil, xerrors.New("not list value was passed to function cdr")
 }

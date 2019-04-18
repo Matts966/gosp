@@ -1,10 +1,10 @@
 package prims
 
 import (
-	"fmt"
 	"reflect"
 
 	"github.com/Matts966/gosp/types"
+	"golang.org/x/xerrors"
 )
 
 // Intern inputs symbol table and symbol name and returns pointer to symbol
@@ -30,15 +30,15 @@ func Intern(symbolTable *types.Cell, name string) (types.Obj, error) {
 var PrimIntern types.PF = func(env *types.Env, args *types.Cell) (types.Obj, error) {
 	l, err := args.Length()
 	if err != nil {
-		return nil, fmt.Errorf("failed to get the length of args, err: %v", err)
+		return nil, xerrors.Errorf("failed to get the length of args, err: %v", err)
 	}
 	if 1 != l {
-		return nil, fmt.Errorf("malformed intern")
+		return nil, xerrors.New("malformed intern")
 	}
 	st := "symbol_table"
 	symbolTable, err := env.Find(st)
 	if err != nil {
-		return nil, err
+		return nil, xerrors.Errorf("finding symbol table in intern caused error: %w", err)
 	}
 	return Intern(symbolTable.(*types.Cell), *reflect.Indirect(reflect.ValueOf(args.Car)).Interface().(types.Symbol).Name)
 }

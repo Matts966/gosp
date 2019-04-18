@@ -1,18 +1,18 @@
 package prims
 
 import (
-	"fmt"
 	"reflect"
 
 	"github.com/Matts966/gosp/repl/evaluator"
 	"github.com/Matts966/gosp/types"
+	"golang.org/x/xerrors"
 )
 
 // PrimNumeq is primitive function returning the equality of int in form of (eq 3 3 3).
 var PrimNumeq types.PF = func(env *types.Env, args *types.Cell) (types.Obj, error) {
 	args, err := evaluator.EvalCell(env, *args)
 	if err != nil {
-		return nil, err
+		return nil, xerrors.Errorf("evaluating args in numeq(=) caused error: %w", err)
 	}
 	argList := *args
 	b := false
@@ -23,7 +23,7 @@ var PrimNumeq types.PF = func(env *types.Env, args *types.Cell) (types.Obj, erro
 		}
 		i, ok := argList.Car.(types.Int)
 		if !ok {
-			return nil, fmt.Errorf("not int values passed to function =")
+			return nil, xerrors.New("not int values passed to function =")
 		}
 		if !b {
 			val = i.Value
@@ -42,7 +42,7 @@ var PrimNumeq types.PF = func(env *types.Env, args *types.Cell) (types.Obj, erro
 		case types.Cell:
 			argList = v
 		default:
-			return nil, fmt.Errorf("malformed =")
+			return nil, xerrors.New("malformed =")
 		}
 	}
 

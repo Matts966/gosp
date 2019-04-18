@@ -9,6 +9,7 @@ import (
 	"github.com/Matts966/gosp/repl/reader"
 	"github.com/Matts966/gosp/repl/scanner"
 	"github.com/Matts966/gosp/types"
+	"golang.org/x/xerrors"
 )
 
 var (
@@ -57,16 +58,16 @@ L:
 			return lastObj, nil
 		}
 		if err != nil {
-			return nil, err
+			return nil, xerrors.Errorf("error occured while ReadExpr in repl.Run symbolTable=%#v : %w", r.symbolTable, err)
 		}
 
 		switch obj.(type) {
 		case nil:
-			return nil, fmt.Errorf("reading expression returns nil")
+			return nil, xerrors.New("reading expression returns nil")
 		case types.Dot:
-			return nil, fmt.Errorf("stray dot")
+			return nil, xerrors.New("stray dot")
 		case types.RParen:
-			return nil, fmt.Errorf("unmatched right parenthesis")
+			return nil, xerrors.New("unmatched right parenthesis")
 		// Do not return any
 		case types.Comment:
 			continue L
@@ -74,7 +75,7 @@ L:
 
 		o, err := evaluator.Eval(&r.env, obj)
 		if nil != err {
-			return nil, err
+			return nil, xerrors.Errorf("error occured while evaluating obj in repl.Run obj=%#v : %w", obj, err)
 		}
 		fmt.Println(o.String())
 		lastObj = o

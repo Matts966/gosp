@@ -4,6 +4,8 @@ import (
 	"go/scanner"
 	"strings"
 
+	"golang.org/x/xerrors"
+
 	"github.com/Matts966/gosp/repl"
 	"github.com/Matts966/gosp/types"
 )
@@ -17,5 +19,6 @@ var (
 
 func Interpret(lispStr string) (types.Obj, error) {
 	r := repl.New(strings.NewReader(lispStr), "")
-	return r.Run()
+	obj, err := r.Run()
+	return obj, xerrors.Errorf("error occured in repl.Run: %w", err)
 }

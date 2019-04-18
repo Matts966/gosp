@@ -2,6 +2,7 @@ package evaluator
 
 import (
 	"github.com/Matts966/gosp/types"
+	"golang.org/x/xerrors"
 )
 
 func EvalCell(env *types.Env, c types.Cell) (*types.Cell, error) {
@@ -10,7 +11,7 @@ func EvalCell(env *types.Env, c types.Cell) (*types.Cell, error) {
 	for {
 		cc, err := Eval(env, cp.Car)
 		if err != nil {
-			return nil, err
+			return nil, xerrors.Errorf("evaluating object in EvalCell caused error: %w", err)
 		}
 		cp.Car = cc
 		switch cd := cp.Cdr.(type) {

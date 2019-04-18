@@ -1,11 +1,11 @@
 package main
 
 import (
-	"fmt"
 	"os"
 	"strings"
 
 	"github.com/Matts966/gosp/repl"
+	"golang.org/x/xerrors"
 )
 
 const (
@@ -34,7 +34,7 @@ func init() {
 		}
 	}
 	if nil == r {
-		panic(fmt.Errorf("file not found"))
+		panic(xerrors.New("file not found"))
 	}
 }
 

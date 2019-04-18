@@ -2,6 +2,7 @@ package evaluator
 
 import (
 	"github.com/Matts966/gosp/types"
+	"golang.org/x/xerrors"
 )
 
 func getLastElement(c *types.Cell) (types.Obj, error) {
@@ -22,7 +23,7 @@ func getLastElement(c *types.Cell) (types.Obj, error) {
 func Progn(env *types.Env, list *types.Cell) (types.Obj, error) {
 	argList, err := EvalCell(env, *list)
 	if err != nil {
-		return nil, err
+		return nil, xerrors.Errorf("evaluating list in progn caused error: %w", err)
 	}
 	return getLastElement(argList)
 }

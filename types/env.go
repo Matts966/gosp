@@ -1,7 +1,7 @@
 package types
 
 import (
-	"fmt"
+	"golang.org/x/xerrors"
 )
 
 // Env type
@@ -41,13 +41,13 @@ func (e *Env) Find(name string) (Obj, error) {
 			case *Cell:
 				bc, ok := bind.Car.(*Symbol)
 				if !ok {
-					return nil, fmt.Errorf("symbol in env is not pointer to Symbol")
+					return nil, xerrors.New("symbol in env is not pointer to Symbol")
 				}
 				if name == *bc.Name {
 					return cell.Car, nil
 				}
 			default:
-				return nil, fmt.Errorf("unknown bind type, bind: %#v", bind)
+				return nil, xerrors.Errorf("unknown bind type, bind: %#v", bind)
 			}
 			switch next := cell.Cdr.(type) {
 			case nil:
@@ -55,7 +55,7 @@ func (e *Env) Find(name string) (Obj, error) {
 			case *Cell:
 				cell = next
 			default:
-				return nil, fmt.Errorf("unknown next type, next: %#v", next)
+				return nil, xerrors.Errorf("unknown next type, next: %#v", next)
 			}
 		}
 	}
@@ -67,10 +67,10 @@ func (e *Env) Set(name string, obj Obj) (Obj, error) {
 		cell := p.vars
 		for {
 			if nil == cell {
-				return nil, fmt.Errorf("symbol %s not found", name)
+				return nil, xerrors.Errorf("symbol %s not found", name)
 			}
 			if nil == cell.Car {
-				return nil, fmt.Errorf("symbol %s not found", name)
+				return nil, xerrors.Errorf("symbol %s not found", name)
 			}
 			switch bind := cell.Car.(type) {
 			case nil:
@@ -78,14 +78,14 @@ func (e *Env) Set(name string, obj Obj) (Obj, error) {
 			case *Cell:
 				bc, ok := bind.Car.(*Symbol)
 				if !ok {
-					return nil, fmt.Errorf("symbol in env should be Symbol")
+					return nil, xerrors.Errorf("symbol in env should be Symbol")
 				}
 				if name == *bc.Name {
 					bind.Cdr = obj
 					return obj, nil
 				}
 			default:
-				return nil, fmt.Errorf("unknown bind type, bind: %#v", bind)
+				return nil, xerrors.Errorf("unknown bind type, bind: %#v", bind)
 			}
 
 			switch next := cell.Cdr.(type) {
@@ -94,11 +94,11 @@ func (e *Env) Set(name string, obj Obj) (Obj, error) {
 			case *Cell:
 				cell = next
 			default:
-				return nil, fmt.Errorf("unknown next type, next: %#v", next)
+				return nil, xerrors.Errorf("unknown next type, next: %#v", next)
 			}
 		}
 	}
-	return nil, fmt.Errorf("symbol %s not found", name)
+	return nil, xerrors.Errorf("symbol %s not found", name)
 }
 
 func (e *Env) AddObj(name string, obj Obj) {
