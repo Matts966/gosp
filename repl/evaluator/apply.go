@@ -21,9 +21,12 @@ func apply(f types.Func, env *types.Env, args *types.Cell) (types.Obj, error) {
 	if nil == uf.Body {
 		return Progn(&ne, nil)
 	}
-	b := reflect.Indirect(reflect.ValueOf(uf.Body)).Interface().(types.Cell)
+	b, ok := uf.Body.(*types.Cell)
+	if !ok {
+		return nil, xerrors.New("list should be pointer to types.Cell")
+	}
 	if nil == args {
-		return Progn(&ne, &b)
+		return Progn(&ne, b)
 	}
 	eargs, err := EvalCell(env, *args)
 	if err != nil {
@@ -67,5 +70,5 @@ func apply(f types.Func, env *types.Env, args *types.Cell) (types.Obj, error) {
 	}
 	ne.AddScope(m)
 
-	return Progn(&ne, &b)
+	return Progn(&ne, b)
 }

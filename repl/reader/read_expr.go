@@ -78,7 +78,7 @@ func readList(symbolTable *types.Cell, scn *scanner.Scanner) (types.Obj, error) 
 			return obj, xerrors.Errorf("error occured while 2nd ReadExpr in readList, symbolTable=%#v : %w", symbolTable, err)
 		}
 		if _, ok := obj.(types.RParen); ok {
-			return types.Cell{}, nil
+			return types.False{}, nil
 		}
 		return nil, xerrors.New("unclosed parenthesis")
 	case types.Dot:

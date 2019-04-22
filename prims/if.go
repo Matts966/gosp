@@ -24,16 +24,23 @@ var PrimIf types.PF = func(env *types.Env, args *types.Cell) (types.Obj, error) 
 	}
 	// If true, evaluate texpr
 	if _, ok := cond.(types.False); !ok {
-		return evaluator.Eval(env, reflect.Indirect(reflect.ValueOf(args.Cdr)).Interface().(types.Cell).Car)
+		cd, ok := args.Cdr.(*types.Cell)
+		if !ok {
+			return nil, xerrors.Errorf("evaluating expr failed in function if, expr: %+v", args.Cdr)
+		}
+		return evaluator.Eval(env, cd.Car)
 	}
 
-	els := reflect.Indirect(reflect.ValueOf(args.Cdr)).Interface().(types.Cell).Cdr
-	if nil == els {
+	cd, ok := args.Cdr.(*types.Cell)
+	if !ok {
+		return nil, xerrors.New("dotted list was passed to primitive function if")
+	}
+	elsc, ok := cd.Cdr.(*types.Cell)
+	if nil == cd.Cdr {
 		return types.False{}, nil
 	}
-	if elsc, ok := reflect.Indirect(reflect.ValueOf(els)).Interface().(types.Cell); !ok {
+	if !ok {
 		return nil, xerrors.New("dotted list was passed to primitive function if")
-	} else {
-		return evaluator.Progn(env, &elsc)
 	}
+	return evaluator.Progn(env, elsc)
 }

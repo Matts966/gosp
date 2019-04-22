@@ -1,8 +1,6 @@
 package prims
 
 import (
-	"reflect"
-
 	"github.com/Matts966/gosp/repl/evaluator"
 	"github.com/Matts966/gosp/types"
 	"golang.org/x/xerrors"
@@ -14,42 +12,39 @@ var PrimMinus types.PF = func(env *types.Env, args *types.Cell) (types.Obj, erro
 	if err != nil {
 		return nil, xerrors.Errorf("evaluating args in minus caused error: %w", err)
 	}
-	argList := *args
-	if nil == argList.Car {
+	if nil == args.Car {
 		return types.Int{Value: 0}, nil
 	}
-	i, ok := argList.Car.(types.Int)
+	i, ok := args.Car.(types.Int)
 	if !ok {
 		return nil, xerrors.New("not int values passed to function minus")
 	}
 	val := i.Value
 	// unary minus returns negative value
-	if argList.Cdr == nil {
+	if args.Cdr == nil {
 		return types.Int{Value: -val}, nil
 	}
-	to, _ := reflect.Indirect(reflect.ValueOf(argList.Cdr)).Interface().(types.Obj)
-	switch v := to.(type) {
-	case types.Cell:
-		argList = v
+	switch v := args.Cdr.(type) {
+	case *types.Cell:
+		args = v
 	default:
 		return nil, xerrors.New("malformed minus")
 	}
 	for {
-		if nil == argList.Car {
+		if nil == args.Car {
 			break
 		}
-		i, ok := argList.Car.(types.Int)
+		i, ok := args.Car.(types.Int)
 		if !ok {
 			return nil, xerrors.New("not int values passed to function minus")
 		}
 		val -= i.Value
-		if argList.Cdr == nil {
+		if args.Cdr == nil {
 			break
 		}
-		to, _ := reflect.Indirect(reflect.ValueOf(argList.Cdr)).Interface().(types.Obj)
-		switch v := to.(type) {
-		case types.Cell:
-			argList = v
+		switch v := args.Cdr.(type) {
+		case *types.Cell:
+			args = v
 		default:
 			return nil, xerrors.New("malformed minus")
 		}
