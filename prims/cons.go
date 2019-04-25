@@ -21,7 +21,7 @@ var PrimCons types.PF = func(env *types.Env, args *types.Cell) (types.Obj, error
 
 	args, err = evaluator.EvalCell(env, *args)
 	if err != nil {
-		return nil, xerrors.Errorf("evaluating args in cons returns error: %w", err)
+		return nil, xerrors.Errorf("evaluating args in cons caused error: %w", err)
 	}
 
 	// Cdr is not nil because the length of list is 2.

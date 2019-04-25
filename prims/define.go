@@ -28,7 +28,7 @@ var PrimDefine types.PF = func(env *types.Env, args *types.Cell) (types.Obj, err
 	acc, _ := ac.(types.Cell)
 	val, err := evaluator.Eval(env, acc.Car)
 	if err != nil {
-		return nil, xerrors.Errorf("evaluating object in define returns error: %w", err)
+		return nil, xerrors.Errorf("evaluating object in define caused error: %w", err)
 	}
 	env.AddObj(*s.Name, val)
 	return val, nil
