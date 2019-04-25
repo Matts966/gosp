@@ -1,8 +1,6 @@
 package prims
 
 import (
-	"reflect"
-
 	"github.com/Matts966/gosp/repl/evaluator"
 	"github.com/Matts966/gosp/types"
 	"golang.org/x/xerrors"
@@ -22,7 +20,11 @@ var PrimSetq types.PF = func(env *types.Env, args *types.Cell) (types.Obj, error
 	if !ok {
 		return nil, xerrors.New("cannot setq value to other than pointer to symbol")
 	}
-	val := reflect.Indirect(reflect.ValueOf(args.Cdr)).Interface().(types.Cell).Car
+	cdr, ok := args.Cdr.(*types.Cell)
+	if !ok {
+		return nil, xerrors.New("list should be pointer to types.Cell")
+	}
+	val := cdr.Car
 	val, err = evaluator.Eval(env, val)
 	if err != nil {
 		return nil, xerrors.Errorf("evaluating args in setq caused error: %w", err)

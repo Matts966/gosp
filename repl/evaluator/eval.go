@@ -1,22 +1,15 @@
 package evaluator
 
 import (
-	"reflect"
-
 	"github.com/Matts966/gosp/types"
 	"golang.org/x/xerrors"
 )
 
 func Eval(env *types.Env, obj types.Obj) (types.Obj, error) {
-	val := reflect.Indirect(reflect.ValueOf(obj))
-	if !val.IsValid() {
-		return nil, xerrors.New("invalid object value is passed to function Eval")
-	}
-	obj, _ = val.Interface().(types.Obj)
 	switch o := obj.(type) {
 	case types.Int:
 		return obj, nil
-	case types.Symbol:
+	case *types.Symbol:
 		bind, err := env.Find(*o.Name)
 		if err != nil {
 			return nil, xerrors.Errorf("finding object from env in Eval caused error: %w", err)
@@ -30,7 +23,7 @@ func Eval(env *types.Env, obj types.Obj) (types.Obj, error) {
 		default:
 			return nil, xerrors.Errorf("unknown type symbol: %#v, b: %+v", o.Name, b)
 		}
-	case types.Cell:
+	case *types.Cell:
 		// Function application
 		fn, err := Eval(env, o.Car)
 		if err != nil {
@@ -43,12 +36,11 @@ func Eval(env *types.Env, obj types.Obj) (types.Obj, error) {
 		if o.Cdr == nil {
 			return apply(f, env, nil)
 		}
-		ocd, _ := reflect.Indirect(reflect.ValueOf(o.Cdr)).Interface().(types.Obj)
-		c, ok := ocd.(types.Cell)
+		c, ok := o.Cdr.(*types.Cell)
 		if !ok {
 			return nil, xerrors.Errorf("args is not list, args: %#v", o.Cdr)
 		}
-		return apply(f, env, &c)
+		return apply(f, env, c)
 	default:
 		return o, nil
 	}

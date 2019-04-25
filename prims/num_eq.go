@@ -1,8 +1,6 @@
 package prims
 
 import (
-	"reflect"
-
 	"github.com/Matts966/gosp/repl/evaluator"
 	"github.com/Matts966/gosp/types"
 	"golang.org/x/xerrors"
@@ -14,14 +12,13 @@ var PrimNumeq types.PF = func(env *types.Env, args *types.Cell) (types.Obj, erro
 	if err != nil {
 		return nil, xerrors.Errorf("evaluating args in numeq(=) caused error: %w", err)
 	}
-	argList := *args
 	b := false
 	val := 0
 	for {
-		if nil == argList.Car {
+		if nil == args.Car {
 			break
 		}
-		i, ok := argList.Car.(types.Int)
+		i, ok := args.Car.(types.Int)
 		if !ok {
 			return nil, xerrors.New("not int values passed to function =")
 		}
@@ -34,13 +31,12 @@ var PrimNumeq types.PF = func(env *types.Env, args *types.Cell) (types.Obj, erro
 			}
 		}
 
-		if argList.Cdr == nil {
+		if args.Cdr == nil {
 			break
 		}
-		to, _ := reflect.Indirect(reflect.ValueOf(argList.Cdr)).Interface().(types.Obj)
-		switch v := to.(type) {
-		case types.Cell:
-			argList = v
+		switch v := args.Cdr.(type) {
+		case *types.Cell:
+			args = v
 		default:
 			return nil, xerrors.New("malformed =")
 		}

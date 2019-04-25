@@ -23,9 +23,8 @@ var PrimDefine types.PF = func(env *types.Env, args *types.Cell) (types.Obj, err
 		return nil, xerrors.New("the car of the cell passed to define was not a symbol")
 	}
 
-	ac := reflect.Indirect(reflect.ValueOf(args.Cdr)).Interface().(types.Obj)
 	// ac is cell because the lenght of args is 2.
-	acc, _ := ac.(types.Cell)
+	acc, _ := args.Cdr.(*types.Cell)
 	val, err := evaluator.Eval(env, acc.Car)
 	if err != nil {
 		return nil, xerrors.Errorf("evaluating object in define caused error: %w", err)

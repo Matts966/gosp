@@ -1,8 +1,6 @@
 package prims
 
 import (
-	"reflect"
-
 	"github.com/Matts966/gosp/repl/evaluator"
 	"github.com/Matts966/gosp/types"
 	"golang.org/x/xerrors"
@@ -25,7 +23,11 @@ var PrimCons types.PF = func(env *types.Env, args *types.Cell) (types.Obj, error
 	}
 
 	// Cdr is not nil because the length of list is 2.
-	cdr := reflect.Indirect(reflect.ValueOf(args.Cdr)).Interface().(types.Cell)
+	cdr, ok := args.Cdr.(*types.Cell)
+	if !ok {
+		return nil, xerrors.Errorf(
+			"unknown value other than pointer to cell is passed to cons, value: %+v", cdr)
+	}
 	args.Cdr = cdr.Car
 
 	return args, nil

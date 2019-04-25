@@ -9,13 +9,13 @@ import (
 
 func makeFunc(env *types.Env, list *types.Cell) (*types.UserFuncs, error) {
 	aci := reflect.Indirect(reflect.ValueOf(list.Car)).Interface()
-	_, ok := aci.(types.Cell)
+	_, ok := list.Car.(*types.Cell)
 	if !ok {
 		if _, ok = aci.(types.False); !ok {
 			return nil, xerrors.New("the args of function is not list")
 		}
 	}
-	_, ok = reflect.Indirect(reflect.ValueOf(list.Cdr)).Interface().(types.Cell)
+	_, ok = list.Cdr.(*types.Cell)
 	if !ok {
 		return nil, xerrors.New("the body of function is not list")
 	}
@@ -42,13 +42,13 @@ var PrimDefun types.PF = func(env *types.Env, args *types.Cell) (types.Obj, erro
 	}
 
 	aci := reflect.Indirect(reflect.ValueOf(argList.Cdr)).Interface()
-	acic, ok := aci.(types.Cell)
+	acc, ok := argList.Cdr.(*types.Cell)
 	if !ok {
 		if _, ok = aci.(types.False); !ok {
 			return nil, xerrors.New("the args and body of function is not list")
 		}
 	}
-	df, err := makeFunc(env, &acic)
+	df, err := makeFunc(env, acc)
 	if err != nil {
 		return nil, xerrors.Errorf("making function in defun caused error: %w", err)
 	}

@@ -1,8 +1,6 @@
 package prims
 
 import (
-	"reflect"
-
 	"github.com/Matts966/gosp/repl/evaluator"
 	"github.com/Matts966/gosp/types"
 	"golang.org/x/xerrors"
@@ -17,8 +15,7 @@ var PrimCdr types.PF = func(env *types.Env, args *types.Cell) (types.Obj, error)
 	if c == nil {
 		return nil, xerrors.New("nil was passed to function cdr")
 	}
-	cc := reflect.Indirect(reflect.ValueOf(c.Car)).Interface().(types.Obj)
-	if cc, ok := cc.(types.Cell); ok {
+	if cc, ok := c.Car.(*types.Cell); ok {
 		return cc.Cdr, nil
 	}
 	return nil, xerrors.New("not list value was passed to function cdr")

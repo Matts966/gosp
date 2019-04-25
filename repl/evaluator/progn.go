@@ -12,8 +12,6 @@ func getLastElement(c *types.Cell) (types.Obj, error) {
 			return c.Car, nil
 		case *types.Cell:
 			c = cc
-		case types.Cell:
-			c = &cc
 		default:
 			return cc, nil
 		}

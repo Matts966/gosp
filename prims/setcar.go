@@ -1,8 +1,6 @@
 package prims
 
 import (
-	"reflect"
-
 	"github.com/Matts966/gosp/repl/evaluator"
 	"github.com/Matts966/gosp/types"
 	"golang.org/x/xerrors"
@@ -22,11 +20,14 @@ var PrimSetCar types.PF = func(env *types.Env, args *types.Cell) (types.Obj, err
 		return nil, xerrors.Errorf("evaluating args in setcar caused error: %w", err)
 	}
 	// args.Cdr is not nil because the length of args is 2
-	acdr := reflect.Indirect(reflect.ValueOf(args.Cdr)).Interface().(types.Cell).Car
+	acc, ok := args.Cdr.(*types.Cell)
+	if !ok {
+		return nil, xerrors.New("list should be pointer to types.Cell")
+	}
 
 	if _, ok := args.Car.(*types.Cell); !ok {
 		return nil, xerrors.New("not pointer value returned from env")
 	}
-	args.Car.(*types.Cell).Car = acdr
+	args.Car.(*types.Cell).Car = acc.Car
 	return args.Car, nil
 }

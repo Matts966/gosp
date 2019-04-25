@@ -19,8 +19,6 @@ func EvalCell(env *types.Env, c types.Cell) (*types.Cell, error) {
 			return head, nil
 		case *types.Cell:
 			cp = cd
-		case types.Cell:
-			cp = &cd
 		default:
 			cc, err = Eval(env, cd)
 			cp.Cdr = cc
