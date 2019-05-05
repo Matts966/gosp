@@ -10,14 +10,19 @@ import (
 
 // PrimServer is primitive function for setting up simple http file server.
 var PrimServer types.PF = func(env *types.Env, args *types.Cell) (types.Obj, error) {
-	obj, err := evaluator.Eval(env, args.Car)
 	address := "0.0.0.0:80"
-	if err != nil {
-		return nil, xerrors.Errorf("evaluating args in server caused error: %w", err)
-	}
-	if s, ok := obj.(*types.Symbol); ok {
-		if s != nil {
-			address = *s.Name
+	if args != nil {
+		args, err := evaluator.EvalCell(env, *args)
+	
+		if err != nil {
+			return nil, xerrors.Errorf("evaluating args in server caused error: %w", err)
+		}
+		if args != nil {
+			if s, ok := args.Car.(*types.Symbol); ok {
+				if s != nil {
+					address = *s.Name
+				}
+			}
 		}
 	}
 
