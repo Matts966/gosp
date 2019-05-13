@@ -20,5 +20,8 @@ var (
 func Interpret(lispStr string) (types.Obj, error) {
 	r := repl.New(strings.NewReader(lispStr), "")
 	obj, err := r.Run()
-	return obj, xerrors.Errorf("error occured in repl.Run: %w", err)
+	if err != nil {
+		return nil, xerrors.Errorf("error occured in repl.Run: %w", err)
+	}
+	return obj, nil
 }

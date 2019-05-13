@@ -3,7 +3,6 @@ package prims
 import (
 	"log"
 	"net/http"
-	"strconv"
 
 	"github.com/Matts966/gosp/repl/evaluator"
 	"github.com/Matts966/gosp/types"
@@ -19,16 +18,25 @@ func logWrapper(handler http.Handler) http.Handler {
 
 // PrimServer is primitive function for setting up simple http file server.
 var PrimServer types.PF = func(env *types.Env, args *types.Cell) (types.Obj, error) {
-	port := 80
-	obj, err := evaluator.Eval(env, args.Car)
-	if err != nil {
-		return nil, xerrors.Errorf("evaluating args in server caused error: %w", err)
-	}
-	if i, ok := obj.(types.Int); ok {
-		port = i.Value
+	address := "0.0.0.0:80"
+	if args != nil {
+		args, err := evaluator.EvalCell(env, *args)
+
+		if err != nil {
+			return nil, xerrors.Errorf("evaluating args in server caused error: %w", err)
+		}
+		if args != nil {
+			if s, ok := args.Car.(*types.Symbol); ok {
+				if s != nil {
+					address = *s.Name
+				}
+			}
+		}
 	}
 
 	fileServer := http.StripPrefix("/", http.FileServer(http.Dir(".")))
-	http.ListenAndServe(":"+strconv.Itoa(port), logWrapper(fileServer))
+	if err := http.ListenAndServe(address, logWrapper(fileServer)); err != nil {
+		return types.False{}, xerrors.Errorf("setting up file server failed err: %+v", err)
+	}
 	return types.False{}, nil
 }
