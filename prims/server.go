@@ -1,6 +1,7 @@
 package prims
 
 import (
+	"log"
 	"net/http"
 	"strconv"
 
@@ -8,6 +9,13 @@ import (
 	"github.com/Matts966/gosp/types"
 	"golang.org/x/xerrors"
 )
+
+func logWrapper(handler http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		log.Println(r.Method, r.URL.Path)
+		handler.ServeHTTP(w, r)
+	})
+}
 
 // PrimServer is primitive function for setting up simple http file server.
 var PrimServer types.PF = func(env *types.Env, args *types.Cell) (types.Obj, error) {
@@ -21,6 +29,6 @@ var PrimServer types.PF = func(env *types.Env, args *types.Cell) (types.Obj, err
 	}
 
 	fileServer := http.StripPrefix("/", http.FileServer(http.Dir(".")))
-	http.ListenAndServe(":"+strconv.Itoa(port), fileServer)
+	http.ListenAndServe(":"+strconv.Itoa(port), logWrapper(fileServer))
 	return types.False{}, nil
 }
