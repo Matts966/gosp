@@ -1,4 +1,4 @@
-# gosp
+# Gosp
 
 This repository is for my learning of Golang by implementing lisp refering to [minilisp](https://github.com/rui314/minilisp).
 
