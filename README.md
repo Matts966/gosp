@@ -4,7 +4,7 @@ This repository is for my learning of Golang by implementing lisp refering to [m
 
 Test code is inspired by the [minilisp](https://github.com/rui314/minilisp) repositoy.
 
-You can write lisp in your go source, if you want
+You can write lisp in your go source, if you want ；）
 
 ```Go
 
